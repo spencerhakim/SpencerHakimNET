@@ -165,8 +165,8 @@ namespace SpencerHakim.Windows.Forms
         private Color currentChromaKey = Color.Empty;
         private PushButtonState currentAreaState = PushButtonState.Normal; //state of whatever button the mouse is currently hovering over/clicking
 
-        private float scaleWX = 0;
-        private float scaleHY = 0;
+        private float scaleWX = 1;
+        private float scaleHY = 1;
 
         public ImageMapButton()
         {
@@ -239,12 +239,6 @@ namespace SpencerHakim.Windows.Forms
             e.Graphics.InterpolationMode = this.InterpolationMode;
             e.Graphics.PixelOffsetMode = this.PixelOffsetMode;
 
-            //calculate scaling
-            GraphicsUnit gu = GraphicsUnit.Pixel;
-            RectangleF rF = this.Image.GetBounds(ref gu); //why the fuck is this a ref?
-            scaleHY = (float)this.Height / rF.Height;
-            scaleWX = (float)this.Width / rF.Width;
-
             //if disabled, draw disabled image
             if( !this.Enabled && this.DisabledImage != null )
             {
@@ -252,9 +246,16 @@ namespace SpencerHakim.Windows.Forms
                 return;
             }
 
-            //draw foreground image
+            //calculate scale and draw foreground image
             if( this.Image != null )
+            {
+                GraphicsUnit gu = GraphicsUnit.Pixel;
+                RectangleF rF = this.Image.GetBounds(ref gu); //why the fuck is this a ref?
+                scaleHY = (float)this.Height / rF.Height;
+                scaleWX = (float)this.Width / rF.Width;
+
                 e.Graphics.DrawImage(this.Image, 0, 0, this.Width, this.Height);
+            }
 
             //draw toggled buttons
             var toggledAreas = this.Where( area => area.ToggleMode && area.Pressed );
