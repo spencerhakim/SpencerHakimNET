@@ -33,13 +33,13 @@
             // 
             // imageMapButton
             // 
-            this.imageMapButton.ChromaKeyImage = global::TestApp.Properties.Resources.chromaKey;
-            this.imageMapButton.DisabledImage = global::TestApp.Properties.Resources.imageDisabled;
+            this.imageMapButton.ChromaKeyImage = global::ImageMapButtonDemoApp.Properties.Resources.chromaKey;
+            this.imageMapButton.DisabledImage = global::ImageMapButtonDemoApp.Properties.Resources.imageDisabled;
             this.imageMapButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.imageMapButton.Image = global::TestApp.Properties.Resources.image;
+            this.imageMapButton.Image = global::ImageMapButtonDemoApp.Properties.Resources.image;
             this.imageMapButton.Location = new System.Drawing.Point(0, 0);
-            this.imageMapButton.MouseDownImage = global::TestApp.Properties.Resources.imageDown;
-            this.imageMapButton.MouseOverImage = global::TestApp.Properties.Resources.imageOver;
+            this.imageMapButton.MouseDownImage = global::ImageMapButtonDemoApp.Properties.Resources.imageDown;
+            this.imageMapButton.MouseOverImage = global::ImageMapButtonDemoApp.Properties.Resources.imageOver;
             this.imageMapButton.Name = "imageMapButton";
             this.imageMapButton.Size = new System.Drawing.Size(152, 152);
             this.imageMapButton.TabIndex = 0;
