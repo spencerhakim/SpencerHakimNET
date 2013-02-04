@@ -239,13 +239,6 @@ namespace SpencerHakim.Windows.Forms
             e.Graphics.InterpolationMode = this.InterpolationMode;
             e.Graphics.PixelOffsetMode = this.PixelOffsetMode;
 
-            //if disabled, draw disabled image
-            if( !this.Enabled && this.DisabledImage != null )
-            {
-                e.Graphics.DrawImage(this.DisabledImage, 0, 0, this.Width, this.Height);
-                return;
-            }
-
             //calculate scale and draw foreground image
             if( this.Image != null )
             {
@@ -257,20 +250,24 @@ namespace SpencerHakim.Windows.Forms
                 e.Graphics.DrawImage(this.Image, 0, 0, this.Width, this.Height);
             }
 
+            //draw disabled areas, or draw all areas as disabled if control is disabled
+            var disabledAreas = this.Where( area => !this.Enabled || !area.Enabled );
+            foreach(var area in disabledAreas)
+            {
+                if( this.DisabledImage != null )
+                    e.Graphics.DrawImage(this.DisabledImage, area.DestinationRect.Scale(scaleWX, scaleHY), area.SourceRect, GraphicsUnit.Pixel);
+            }
+
+            //don't draw anything else if control is disabled
+            if( !this.Enabled )
+                return;
+
             //draw toggled buttons
             var toggledAreas = this.Where( area => area.ToggleMode && area.Pressed );
             foreach(var area in toggledAreas)
             {
                 if( this.MouseDownImage != null )
                     e.Graphics.DrawImage(this.MouseDownImage, area.DestinationRect.Scale(scaleWX, scaleHY), area.SourceRect, GraphicsUnit.Pixel);
-            }
-
-            //draw disabled areas
-            var disabledAreas = this.Where( area => !area.Enabled );
-            foreach(var area in disabledAreas)
-            {
-                if( this.DisabledImage != null )
-                    e.Graphics.DrawImage(this.DisabledImage, area.DestinationRect.Scale(scaleWX, scaleHY), area.SourceRect, GraphicsUnit.Pixel);
             }
 
             //draw the current button
