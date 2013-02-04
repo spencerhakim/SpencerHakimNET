@@ -8,8 +8,8 @@
     <ProjectGuid>{28E5C43D-520E-4D00-85FD-F4AC18BCD551}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestApp</RootNamespace>
-    <AssemblyName>TestApp</AssemblyName>
+    <RootNamespace>ImageMapButtonDemoApp</RootNamespace>
+    <AssemblyName>ImageMapButtonDemoApp</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
