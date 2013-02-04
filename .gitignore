@@ -18,3 +18,6 @@ Thumbs.db
 
 packages/*
 !packages/repositories.config
+
+# Ignore the MarkdownPad generated HTML preview
+README-MarkdownPadPreview.html
