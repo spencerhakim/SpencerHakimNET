@@ -1,6 +1,6 @@
 SpencerHakim.Windows.Forms
 ==============
-A small collection of custom .NET Windows Forms components written in C#.
+A small collection of custom .NET Windows Forms components written in C#. Components are separated into their own projects and merged using ILRepack into SpencerHakim.Windows.Forms.dll. Requires Nuget.
 
 ---
 
@@ -20,3 +20,8 @@ Functions similarly to the HTML `<map>` tag, but using an image color map instea
 - Overlapping destination rectangles are OK, just make sure to design your images so that source rectangles do not overlap.
 - You own your images, so dispose of them when you're done; memory leaks are bad, mmkay?
 - For ease of use, `ImageMapButton` implements `IEnumerable<ImageMapButtonArea>` and has an `ImageMapButtonArea this[Color]` indexer. This probably isn't "best practice." I do not care.
+
+---
+
+##DWMThumbnail
+Uses the Desktop Window Manager API to display a thumbnail of the specified window. Requires Windows Vista or newer.
