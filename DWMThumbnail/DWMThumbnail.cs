@@ -75,20 +75,69 @@ namespace SpencerHakim.Windows.Forms
             get { return hwndSource; }
             set
             {
-                if( thumbId != IntPtr.Zero )
-                    Marshal.ThrowExceptionForHR( DwmUnregisterThumbnail(thumbId) );
+                if( this.thumbId != IntPtr.Zero )
+                    Marshal.ThrowExceptionForHR( DwmUnregisterThumbnail(this.thumbId) );
 
                 //reset privates
-                thumbId = IntPtr.Zero;
-                hwndSource = value;
+                this.thumbId = IntPtr.Zero;
+                this.hwndSource = value;
 
-                if( hwndSource == IntPtr.Zero )
+                if( this.hwndSource == IntPtr.Zero )
                     return;
 
-                Marshal.ThrowExceptionForHR( DwmRegisterThumbnail(this.FindForm().Handle, this.hwndSource, out thumbId) );
-                UpdateThumbProps();
+                Marshal.ThrowExceptionForHR( DwmRegisterThumbnail(this.FindForm().Handle, this.hwndSource, out this.thumbId) );
+                this.UpdateThumbProps();
             }
         }
+
+        /// <summary>
+        /// Gets or sets whether the thumbnail should scale above the native resolution of the source window
+        /// </summary>
+        [Category("Appearance"), Description("Gets or sets whether the thumbnail should scale above the native resolution of the source window")]
+        [DefaultValue(true)]
+        public bool ScaleAboveNativeSize
+        {
+            get { return this.scaleAboveNativeSize; }
+            set
+            {
+                this.scaleAboveNativeSize = value;
+                this.UpdateThumbProps();
+            }
+        }
+        private bool scaleAboveNativeSize = true;
+
+        /// <summary>
+        /// Gets or sets the opacity of the thumbnail
+        /// </summary>
+        [Category("Appearance"), Description("Gets or sets the opacity of the thumbnail")]
+        [DefaultValue((byte)255)]
+        public byte Opacity
+        {
+            get { return this.opacity; }
+            set
+            {
+                this.opacity = value;
+                this.UpdateThumbProps();
+            }
+        }
+        private byte opacity = 255;
+
+        /// <summary>
+        /// Gets or sets whether the thumbnail should include the native Windows border (Aero glass, titlebar, titlebar buttons, etc.) in the thumbnail.
+        /// NOTE: Windows that draw their own border are unaffected by this setting.
+        /// </summary>
+        [Category("Appearance"), Description("Gets or sets whether the thumbnail should include the native Windows border (Aero glass, titlebar, titlebar buttons, etc.) in the thumbnail")]
+        [DefaultValue(false)]
+        public bool SourceClientAreaOnly
+        {
+            get { return this.sourceClientAreaOnly; }
+            set
+            {
+                this.sourceClientAreaOnly = value;
+                this.UpdateThumbProps();
+            }
+        }
+        private bool sourceClientAreaOnly = false;
 
         /// <summary>
         /// Gets the absolute position of the control relative to its form
@@ -119,36 +168,47 @@ namespace SpencerHakim.Windows.Forms
             base.Dispose(disposing);
         }
 
+        #region Overrides
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-            UpdateThumbProps();
+            this.UpdateThumbProps();
         }
+
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            base.OnVisibleChanged(e);
+            this.UpdateThumbProps();
+        }
+        #endregion
 
         private void UpdateThumbProps()
         {
             if( thumbId != IntPtr.Zero )
             {
                 Size sourceSize;
-                Marshal.ThrowExceptionForHR( DwmQueryThumbnailSourceSize(thumbId, out sourceSize) );
+                Marshal.ThrowExceptionForHR( DwmQueryThumbnailSourceSize(this.thumbId, out sourceSize) );
 
                 //TODO - create properties to control these
                 DWM_THUMBNAIL_PROPERTIES dwmProps = new DWM_THUMBNAIL_PROPERTIES();
-                dwmProps.dwFlags = DWM_TNP.VISIBLE | DWM_TNP.RECTDESTINATION | DWM_TNP.SOURCECLIENTAREAONLY;
-                dwmProps.fVisible = true;
-                dwmProps.fSourceClientAreaOnly = false;
+                dwmProps.dwFlags = DWM_TNP.VISIBLE | DWM_TNP.OPACITY | DWM_TNP.RECTDESTINATION | DWM_TNP.SOURCECLIENTAREAONLY;
+                dwmProps.fVisible = this.Visible;
+                dwmProps.opacity = this.Opacity;
+                dwmProps.fSourceClientAreaOnly = this.SourceClientAreaOnly;
                 dwmProps.rcDestination = new RECT(
                     this.AbsoluteLocation.X, this.AbsoluteLocation.Y,
                     this.AbsoluteLocation.X + this.Width, this.AbsoluteLocation.Y + this.Height
                 );
 
-                //don't scale up
-                if( sourceSize.Width < this.Width )
-                    dwmProps.rcDestination.Right = dwmProps.rcDestination.Left + sourceSize.Width;
-                if( sourceSize.Height < this.Height )
-                    dwmProps.rcDestination.Bottom = dwmProps.rcDestination.Top + sourceSize.Height;
+                if( !this.ScaleAboveNativeSize )
+                {
+                    if( sourceSize.Width < this.Width )
+                        dwmProps.rcDestination.Right = dwmProps.rcDestination.Left + sourceSize.Width;
+                    if( sourceSize.Height < this.Height )
+                        dwmProps.rcDestination.Bottom = dwmProps.rcDestination.Top + sourceSize.Height;
+                }
 
-                Marshal.ThrowExceptionForHR( DwmUpdateThumbnailProperties(thumbId, ref dwmProps) );
+                Marshal.ThrowExceptionForHR( DwmUpdateThumbnailProperties(this.thumbId, ref dwmProps) );
             }
         }
     }
