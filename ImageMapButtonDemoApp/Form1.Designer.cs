@@ -1,4 +1,4 @@
-﻿namespace TestApp
+﻿namespace ImageMapButtonDemoApp
 {
     partial class Form1
     {

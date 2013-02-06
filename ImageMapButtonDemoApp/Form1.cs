@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using SpencerHakim.Windows.Forms;
 
-namespace TestApp
+namespace ImageMapButtonDemoApp
 {
     public partial class Form1 : Form
     {

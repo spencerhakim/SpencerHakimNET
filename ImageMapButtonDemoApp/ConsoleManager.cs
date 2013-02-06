@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace TestApp
+namespace ImageMapButtonDemoApp
 {
     [SuppressUnmanagedCodeSecurity]
     public static class ConsoleManager
