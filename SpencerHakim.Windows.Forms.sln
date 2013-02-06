@@ -25,6 +25,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{581A6D
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DWMThumbnailDemoApp", "DWMThumbnailDemoApp\DWMThumbnailDemoApp.csproj", "{FDC6A76F-8B0D-436B-8E57-5CE2D317DBB5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DemoApps", "DemoApps", "{7A96617B-71BC-49A4-B75E-700BD930B940}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,8 +55,16 @@ Global
 		{C027D1DC-064A-44F4-BC01-4904BC5B45AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C027D1DC-064A-44F4-BC01-4904BC5B45AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C027D1DC-064A-44F4-BC01-4904BC5B45AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDC6A76F-8B0D-436B-8E57-5CE2D317DBB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDC6A76F-8B0D-436B-8E57-5CE2D317DBB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDC6A76F-8B0D-436B-8E57-5CE2D317DBB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDC6A76F-8B0D-436B-8E57-5CE2D317DBB5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{28E5C43D-520E-4D00-85FD-F4AC18BCD551} = {7A96617B-71BC-49A4-B75E-700BD930B940}
+		{FDC6A76F-8B0D-436B-8E57-5CE2D317DBB5} = {7A96617B-71BC-49A4-B75E-700BD930B940}
 	EndGlobalSection
 EndGlobal

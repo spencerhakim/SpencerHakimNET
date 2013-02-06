@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -65,6 +66,10 @@ namespace SpencerHakim.Windows.Forms
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Gets and sets the handle of the window to display the thumbnail of
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public IntPtr SourceWindow
         {
             get { return hwndSource; }
