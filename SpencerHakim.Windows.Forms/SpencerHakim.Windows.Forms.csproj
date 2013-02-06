@@ -60,7 +60,7 @@
     <PostBuildEvent>cd "$(TargetDir)"
 del SpencerHakim.Windows.Forms.dll
 del merge.log
-ILRepack.exe /union /parallel /wildcards /verbose /log:merge.log /out:SpencerHakim.Windows.Forms.dll SpencerHakim.Windows.Forms.Placeholder.dll *.dll</PostBuildEvent>
+ILRepack.exe /union /parallel /wildcards /verbose /log:merge.log /out:SpencerHakim.Windows.Forms.dll "$(TargetPath)" *.dll</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
