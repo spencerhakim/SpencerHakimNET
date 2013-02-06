@@ -85,9 +85,17 @@ namespace SpencerHakim.Windows.Forms
                 if( hwndSource == IntPtr.Zero )
                     return;
 
-                Marshal.ThrowExceptionForHR( DwmRegisterThumbnail(this.Handle, this.hwndSource, out thumbId) );
+                Marshal.ThrowExceptionForHR( DwmRegisterThumbnail(this.FindForm().Handle, this.hwndSource, out thumbId) );
                 UpdateThumbProps();
             }
+        }
+
+        /// <summary>
+        /// Gets the absolute position of the control relative to its form
+        /// </summary>
+        protected Point AbsoluteLocation
+        {
+            get { return this.FindForm().PointToClient( this.Parent.PointToScreen(this.Location) ); }
         }
         #endregion
 
@@ -128,8 +136,11 @@ namespace SpencerHakim.Windows.Forms
                 DWM_THUMBNAIL_PROPERTIES dwmProps = new DWM_THUMBNAIL_PROPERTIES();
                 dwmProps.dwFlags = DWM_TNP.VISIBLE | DWM_TNP.RECTDESTINATION | DWM_TNP.SOURCECLIENTAREAONLY;
                 dwmProps.fVisible = true;
-                dwmProps.fSourceClientAreaOnly = true;
-                dwmProps.rcDestination = new RECT(this.Left, this.Top, this.Right, this.Bottom);
+                dwmProps.fSourceClientAreaOnly = false;
+                dwmProps.rcDestination = new RECT(
+                    this.AbsoluteLocation.X, this.AbsoluteLocation.Y,
+                    this.AbsoluteLocation.X + this.Width, this.AbsoluteLocation.Y + this.Height
+                );
 
                 //don't scale up
                 if( sourceSize.Width < this.Width )
