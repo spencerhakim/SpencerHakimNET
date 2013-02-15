@@ -140,6 +140,22 @@ namespace SpencerHakim.Windows.Forms
         private bool sourceClientAreaOnly = false;
 
         /// <summary>
+        /// Gets or sets the source area to create a thumbnail of
+        /// </summary>
+        [Category("Behavior"), Description("Gets or sets the source area to create a thumbnail of")]
+        [DefaultValue(typeof(Rectangle), "0,0,0,0")]
+        public Rectangle SourceArea
+        {
+            get { return this.sourceArea; }
+            set
+            {
+                this.sourceArea = value;
+                this.UpdateThumbProps();
+            }
+        }
+        private Rectangle sourceArea = Rectangle.Empty;
+
+        /// <summary>
         /// Gets the absolute position of the control relative to its form
         /// </summary>
         protected Point AbsoluteLocation
@@ -189,7 +205,6 @@ namespace SpencerHakim.Windows.Forms
                 Size sourceSize;
                 Marshal.ThrowExceptionForHR( DwmQueryThumbnailSourceSize(this.thumbId, out sourceSize) );
 
-                //TODO - create properties to control these
                 DWM_THUMBNAIL_PROPERTIES dwmProps = new DWM_THUMBNAIL_PROPERTIES();
                 dwmProps.dwFlags = DWM_TNP.VISIBLE | DWM_TNP.OPACITY | DWM_TNP.RECTDESTINATION | DWM_TNP.SOURCECLIENTAREAONLY;
                 dwmProps.fVisible = this.Visible;
@@ -199,6 +214,17 @@ namespace SpencerHakim.Windows.Forms
                     this.AbsoluteLocation.X, this.AbsoluteLocation.Y,
                     this.AbsoluteLocation.X + this.Width, this.AbsoluteLocation.Y + this.Height
                 );
+
+                if( this.SourceArea != Rectangle.Empty )
+                {
+                    sourceSize = this.SourceArea.Size; //override original size
+
+                    dwmProps.dwFlags |= DWM_TNP.RECTSOURCE;
+                    dwmProps.rcSource = new RECT(
+                        this.SourceArea.X, this.SourceArea.Y,
+                        this.SourceArea.X + this.SourceArea.Width, this.SourceArea.Y + this.SourceArea.Height
+                    );
+                }
 
                 if( !this.ScaleAboveNativeSize )
                 {
