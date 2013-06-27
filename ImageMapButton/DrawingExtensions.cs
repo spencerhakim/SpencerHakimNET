@@ -6,14 +6,8 @@ using System.Drawing;
 
 namespace SpencerHakim
 {
-    public static class Extensions
+    public static class DrawingExtensions
     {
-        public static void SafeDispose(this IDisposable disposable)
-        {
-            if( disposable != null )
-                disposable.Dispose();
-        }
-
         public static Rectangle Scale(this Rectangle rect, float scale)
         {
             return rect.Scale(scale, scale);

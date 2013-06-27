@@ -7,6 +7,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using SpencerHakim.Extensions;
 using PushButtonState = System.Windows.Forms.VisualStyles.PushButtonState;
 
 namespace SpencerHakim.Windows.Forms

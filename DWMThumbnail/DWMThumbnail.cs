@@ -8,57 +8,58 @@ namespace SpencerHakim.Windows.Forms
 {
     public partial class DWMThumbnail : Control
     {
-        #region Interop stuff
-        [DllImport("dwmapi.dll")]
-        private static extern int DwmRegisterThumbnail(IntPtr dest, IntPtr src, out IntPtr thumb);
-
-        [DllImport("dwmapi.dll")]
-        private static extern int DwmUnregisterThumbnail(IntPtr thumb);
-
-        [DllImport("dwmapi.dll")]
-        private static extern int DwmQueryThumbnailSourceSize(IntPtr thumb, out Size size);
-
-        [Flags]
-        private enum DWM_TNP
+        static class NativeMethods
         {
-            RECTDESTINATION = 0x1,
-            RECTSOURCE = 0x2,
-            OPACITY = 0x4,
-            VISIBLE = 0x8,
-            SOURCECLIENTAREAONLY = 0x10
-        }
+            [DllImport("dwmapi.dll")]
+            public static extern int DwmRegisterThumbnail(IntPtr dest, IntPtr src, out IntPtr thumb);
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct RECT
-        {
-            public RECT(int left, int top, int right, int bottom)
+            [DllImport("dwmapi.dll")]
+            public static extern int DwmUnregisterThumbnail(IntPtr thumb);
+
+            [DllImport("dwmapi.dll")]
+            public static extern int DwmQueryThumbnailSourceSize(IntPtr thumb, out Size size);
+
+            [Flags]
+            public enum DWM_TNP
             {
-                Left = left;
-                Top = top;
-                Right = right;
-                Bottom = bottom;
+                RECTDESTINATION = 0x1,
+                RECTSOURCE = 0x2,
+                OPACITY = 0x4,
+                VISIBLE = 0x8,
+                SOURCECLIENTAREAONLY = 0x10
             }
 
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-        }
+            [StructLayout(LayoutKind.Sequential)]
+            public struct RECT
+            {
+                public RECT(int left, int top, int right, int bottom)
+                {
+                    Left = left;
+                    Top = top;
+                    Right = right;
+                    Bottom = bottom;
+                }
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct DWM_THUMBNAIL_PROPERTIES
-        {
-            public DWM_TNP dwFlags;
-            public RECT rcDestination;
-            public RECT rcSource;
-            public byte opacity;
-            public bool fVisible;
-            public bool fSourceClientAreaOnly;
-        }
+                public int Left;
+                public int Top;
+                public int Right;
+                public int Bottom;
+            }
 
-        [DllImport("dwmapi.dll")]
-        private static extern int DwmUpdateThumbnailProperties(IntPtr hThumb, ref DWM_THUMBNAIL_PROPERTIES props);
-        #endregion
+            [StructLayout(LayoutKind.Sequential)]
+            public struct DWM_THUMBNAIL_PROPERTIES
+            {
+                public DWM_TNP dwFlags;
+                public RECT rcDestination;
+                public RECT rcSource;
+                public byte opacity;
+                public bool fVisible;
+                public bool fSourceClientAreaOnly;
+            }
+
+            [DllImport("dwmapi.dll")]
+            public static extern int DwmUpdateThumbnailProperties(IntPtr hThumb, ref DWM_THUMBNAIL_PROPERTIES props);
+        }
 
         #region Privates
         private IntPtr thumbId = IntPtr.Zero;
@@ -76,7 +77,7 @@ namespace SpencerHakim.Windows.Forms
             set
             {
                 if( this.thumbId != IntPtr.Zero )
-                    Marshal.ThrowExceptionForHR( DwmUnregisterThumbnail(this.thumbId) );
+                    Marshal.ThrowExceptionForHR( NativeMethods.DwmUnregisterThumbnail(this.thumbId) );
 
                 //reset privates
                 this.thumbId = IntPtr.Zero;
@@ -85,7 +86,7 @@ namespace SpencerHakim.Windows.Forms
                 if( this.hwndSource == IntPtr.Zero )
                     return;
 
-                Marshal.ThrowExceptionForHR( DwmRegisterThumbnail(this.FindForm().Handle, this.hwndSource, out this.thumbId) );
+                Marshal.ThrowExceptionForHR( NativeMethods.DwmRegisterThumbnail(this.FindForm().Handle, this.hwndSource, out this.thumbId) );
                 this.UpdateThumbProps();
             }
         }
@@ -203,14 +204,14 @@ namespace SpencerHakim.Windows.Forms
             if( thumbId != IntPtr.Zero )
             {
                 Size sourceSize;
-                Marshal.ThrowExceptionForHR( DwmQueryThumbnailSourceSize(this.thumbId, out sourceSize) );
+                Marshal.ThrowExceptionForHR( NativeMethods.DwmQueryThumbnailSourceSize(this.thumbId, out sourceSize) );
 
-                DWM_THUMBNAIL_PROPERTIES dwmProps = new DWM_THUMBNAIL_PROPERTIES();
-                dwmProps.dwFlags = DWM_TNP.VISIBLE | DWM_TNP.OPACITY | DWM_TNP.RECTDESTINATION | DWM_TNP.SOURCECLIENTAREAONLY;
+                NativeMethods.DWM_THUMBNAIL_PROPERTIES dwmProps = new NativeMethods.DWM_THUMBNAIL_PROPERTIES();
+                dwmProps.dwFlags = NativeMethods.DWM_TNP.VISIBLE | NativeMethods.DWM_TNP.OPACITY | NativeMethods.DWM_TNP.RECTDESTINATION | NativeMethods.DWM_TNP.SOURCECLIENTAREAONLY;
                 dwmProps.fVisible = this.Visible;
                 dwmProps.opacity = this.Opacity;
                 dwmProps.fSourceClientAreaOnly = this.SourceClientAreaOnly;
-                dwmProps.rcDestination = new RECT(
+                dwmProps.rcDestination = new NativeMethods.RECT(
                     this.AbsoluteLocation.X, this.AbsoluteLocation.Y,
                     this.AbsoluteLocation.X + this.Width, this.AbsoluteLocation.Y + this.Height
                 );
@@ -219,8 +220,8 @@ namespace SpencerHakim.Windows.Forms
                 {
                     sourceSize = this.SourceArea.Size; //override original size
 
-                    dwmProps.dwFlags |= DWM_TNP.RECTSOURCE;
-                    dwmProps.rcSource = new RECT(
+                    dwmProps.dwFlags |= NativeMethods.DWM_TNP.RECTSOURCE;
+                    dwmProps.rcSource = new NativeMethods.RECT(
                         this.SourceArea.X, this.SourceArea.Y,
                         this.SourceArea.X + this.SourceArea.Width, this.SourceArea.Y + this.SourceArea.Height
                     );
@@ -234,7 +235,7 @@ namespace SpencerHakim.Windows.Forms
                         dwmProps.rcDestination.Bottom = dwmProps.rcDestination.Top + sourceSize.Height;
                 }
 
-                Marshal.ThrowExceptionForHR( DwmUpdateThumbnailProperties(this.thumbId, ref dwmProps) );
+                Marshal.ThrowExceptionForHR( NativeMethods.DwmUpdateThumbnailProperties(this.thumbId, ref dwmProps) );
             }
         }
     }
