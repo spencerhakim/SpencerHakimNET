@@ -22,8 +22,8 @@
     <ProjectGuid>{530F37FD-939C-4071-B59E-D0C7DB72E3C1}</ProjectGuid>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <Keyword>ManagedCProj</Keyword>
-    <RootNamespace>SpencerHakim.CoreAudio</RootNamespace>
-    <ProjectName>SpencerHakim.CoreAudio</ProjectName>
+    <RootNamespace>SpencerHakim</RootNamespace>
+    <ProjectName>SpencerHakimNET.Native</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
