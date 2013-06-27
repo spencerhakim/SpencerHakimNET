@@ -1,15 +1,17 @@
 #include "stdafx.h"
 #include <stdexcept>
-#include "ExceptionTester.h"
+#include "NativeExceptions.h"
 
-void ExceptionTester::ThrowSEHException()
+using namespace SpencerHakim;
+
+void NativeExceptions::ThrowSEHException()
 {
     //triggers SEH - http://msdn.microsoft.com/en-us/library/swezty51.aspx
     volatile int* p = NULL;
     *p = 1;
 }
 
-void ExceptionTester::ThrowSTDException()
+void NativeExceptions::ThrowSTDException()
 {
     throw std::exception();
 }
