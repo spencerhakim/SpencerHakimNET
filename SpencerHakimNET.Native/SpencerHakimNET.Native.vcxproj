@@ -159,6 +159,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ExceptionTester.h" />
     <ClInclude Include="IAudioSessionControl.h" />
     <ClInclude Include="AudioSessionNotificationReceiver.h" />
     <ClInclude Include="Enums.h" />
@@ -174,6 +175,7 @@
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="AudioSessionNotificationReceiver.cpp" />
     <ClCompile Include="AudioSessionNotificationHook.cpp" />
+    <ClCompile Include="ExceptionTester.cpp" />
     <ClCompile Include="Stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
