@@ -1,0 +1,1 @@
+﻿This project serves purely as a placeholder project for ILRepack to merge other assemblies into
