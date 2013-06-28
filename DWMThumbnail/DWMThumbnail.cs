@@ -167,6 +167,9 @@ namespace SpencerHakim.Windows.Forms
 
         public DWMThumbnail()
         {
+            if( Environment.OSVersion.Version.Major < 6 )
+                throw new PlatformNotSupportedException("Requires Windows Vista or newer");
+
             InitializeComponent();
         }
 
