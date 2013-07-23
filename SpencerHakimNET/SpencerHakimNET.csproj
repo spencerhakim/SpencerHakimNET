@@ -47,14 +47,21 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auth\TOTP.cs" />
+    <Compile Include="Convert.cs" />
+    <Compile Include="Environment.cs" />
     <Compile Include="Extensions\EnumerableMethods.cs" />
     <Compile Include="Extensions\GenericMethods.cs" />
     <Compile Include="Extensions\StreamMethods.cs" />
     <Compile Include="Extensions\WindowsMethods.cs" />
+    <Compile Include="IO\Permissions.cs" />
     <Compile Include="Timers\ElapsedEventArgs.cs" />
     <Compile Include="Timers\MultimediaTimer.cs" />
     <Compile Include="Timers\PausableTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Updater\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
