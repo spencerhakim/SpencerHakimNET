@@ -20,6 +20,11 @@ namespace SpencerHakim.Logging
         private bool disposed = false;
 
         /// <summary>
+        /// Gets and sets the minimum severity level to actually log
+        /// </summary>
+        public Severity VerbosityLevel { get; set; }
+
+        /// <summary>
         /// Initializes an instace of the Log class
         /// </summary>
         public Log()
@@ -87,6 +92,9 @@ namespace SpencerHakim.Logging
         /// <param name="text">The text to log</param>
         public void Write(Severity level, string text)
         {
+            if( level > this.VerbosityLevel )
+                return;
+
             this.queue.Enqueue( Tuple.Create(level, text) );
             this.notify.Set();
         }
