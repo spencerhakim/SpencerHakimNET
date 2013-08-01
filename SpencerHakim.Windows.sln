@@ -16,7 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\Unit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DWMThumbnail", "DWMThumbnail\DWMThumbnail.csproj", "{53C953D2-8ECF-42A1-ADA3-4192DE57D9BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpencerHakim.Windows.Forms", "SpencerHakim.Windows.Forms\SpencerHakim.Windows.Forms.csproj", "{C027D1DC-064A-44F4-BC01-4904BC5B45AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpencerHakim.Windows", "SpencerHakim.Windows\SpencerHakim.Windows.csproj", "{C027D1DC-064A-44F4-BC01-4904BC5B45AB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{581A6D81-2D05-467B-8379-1B13D415942A}"
 	ProjectSection(SolutionItems) = preProject

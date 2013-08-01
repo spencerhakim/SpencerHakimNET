@@ -8,8 +8,8 @@
     <ProjectGuid>{C027D1DC-064A-44F4-BC01-4904BC5B45AB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SpencerHakim.Windows.Forms</RootNamespace>
-    <AssemblyName>PLACEHOLDER</AssemblyName>
+    <RootNamespace>SpencerHakim.Windows</RootNamespace>
+    <AssemblyName>SpencerHakim.Windows</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
@@ -53,20 +53,15 @@
       <Name>ImageMapButton</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="README.txt" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd "$(SolutionDir)\packages\ILRepack.1.22.2\tools"
 set ILREPACK="%25CD%25\ILRepack.exe"
 
 cd "$(TargetDir)"
-del SpencerHakim.Windows.Forms.*
+del SpencerHakim.Windows.AIO.*
 del merge.log
-%25ILREPACK%25 /union /parallel /xmldocs /wildcards /log:merge.log /out:SpencerHakim.Windows.Forms.dll "$(TargetPath)" *.dll
-del $(TargetName).*
-</PostBuildEvent>
+%25ILREPACK%25 /union /parallel /xmldocs /wildcards /log:merge.log /out:SpencerHakim.Windows.AIO.dll "$(TargetPath)" *.dll</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
