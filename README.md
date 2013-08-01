@@ -1,6 +1,6 @@
-SpencerHakim.Windows.Forms
+SpencerHakimNET
 ==============
-A small collection of custom .NET Windows Forms components written in C#. Components are separated into their own projects and merged using ILRepack into SpencerHakim.Windows.Forms.dll. Requires Nuget.
+A small collection of utility code and custom Windows Forms and WPF components written in C# slowly amassed over the years. Components are separated into their own projects and merged using ILRepack into SpencerHakim.Windows.Forms.dll. Requires Nuget.
 
 ---
 

@@ -60,7 +60,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SpencerHakimNET\SpencerHakimNET\SpencerHakimNET.csproj">
+    <ProjectReference Include="..\SpencerHakimNET\SpencerHakimNET.csproj">
       <Project>{9974cc3f-51ff-4e7a-a0ef-afa52cd4b90d}</Project>
       <Name>SpencerHakimNET</Name>
     </ProjectReference>
