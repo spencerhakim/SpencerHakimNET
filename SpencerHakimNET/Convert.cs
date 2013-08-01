@@ -7,7 +7,7 @@ namespace SpencerHakim
     /// <summary>
     /// Converts data
     /// </summary>
-    public class Convert
+    public static class Convert
     {
         private const int IN_BYTE_SIZE = 8;
         private const int OUT_BYTE_SIZE = 5;

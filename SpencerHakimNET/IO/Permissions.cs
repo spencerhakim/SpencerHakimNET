@@ -9,7 +9,7 @@ namespace SpencerHakim.IO
     /// <summary>
     /// Read/write permission tests for files and directories
     /// </summary>
-    public class Permissions
+    public static class Permissions
     {
         /// <summary>
         /// Tests for read permission on the specified path. If the path does not exist, the nearest parent directory is tested.
@@ -53,7 +53,7 @@ namespace SpencerHakim.IO
                 throw new ArgumentNullException("path");
 
             if( !Uri.IsWellFormedUriString(path, UriKind.RelativeOrAbsolute) && (new Uri(path)).Scheme == "file" )
-                throw new ArgumentException("path", "Malformed or invalid path");
+                throw new ArgumentException("Malformed or invalid path", "path");
 
             try
             {

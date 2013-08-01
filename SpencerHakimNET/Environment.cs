@@ -6,7 +6,7 @@ namespace SpencerHakim
     /// <summary>
     /// Environment info
     /// </summary>
-    public class Environment
+    public static class Environment
     {
         /// <summary>
         /// Gets the current Unix timestamp (seconds since midnight UTC 1/1/1970)

@@ -7,7 +7,7 @@ namespace SpencerHakim.Auth
     /// <summary>
     /// Implements Google's Two Factor authentication of timed one-time passwords
     /// </summary>
-    public class TOTP
+    public static class TOTP
     {
         /// <summary>
         /// Calculates the TOTP for the current timestamp

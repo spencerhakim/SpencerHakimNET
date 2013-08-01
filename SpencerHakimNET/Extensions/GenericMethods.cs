@@ -37,6 +37,7 @@ namespace SpencerHakim.Extensions
         /// <param name="obj">The object to cast</param>
         /// <param name="objOfAnonType">An object of the anonymous type</param>
         /// <returns>The casted object</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId="objOfAnonType")]
         public static T AnonymousCast<T>(this object obj, T objOfAnonType)
         {
             return (T)obj;
