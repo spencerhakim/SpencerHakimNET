@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using SpencerHakim.Logging;
 
-namespace SpencerHakim.Net.Syslog
+namespace SpencerHakim.Net
 {
     /// <summary>
     /// Syslog facility
@@ -38,7 +38,7 @@ namespace SpencerHakim.Net.Syslog
     /// <summary>
     /// Contains all the necessary data for a syslog message
     /// </summary>
-    public class Message
+    public class SyslogMessage
     {
 #pragma warning disable 1591 //yeah, still too lazy
         public SyslogFacility Facility { get; set; }
@@ -52,7 +52,7 @@ namespace SpencerHakim.Net.Syslog
         /// <summary>
         /// Initializes an instance of the Message class
         /// </summary>
-        public Message()
+        public SyslogMessage()
         {
             this.AppName = Process.GetCurrentProcess().ProcessName;
             this.ProcessID = Process.GetCurrentProcess().Id;
@@ -72,7 +72,7 @@ namespace SpencerHakim.Net.Syslog
         /// </summary>
         /// <param name="message">Syslog message to send</param>
         /// <param name="remote">IP and port of the syslog daemon</param>
-        public static void Send(Message message, IPEndPoint remote)
+        public static void Send(SyslogMessage message, IPEndPoint remote)
         {
             if( message == null )
                 throw new ArgumentNullException("message");

@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using SpencerHakim.Net.Syslog;
+using SpencerHakim.Net;
 
 namespace SpencerHakim.Logging
 {
@@ -47,7 +47,7 @@ namespace SpencerHakim.Logging
         /// <param name="text">The text to log</param>
         public void Write(Severity level, string text)
         {
-            var message = new Message()
+            var message = new SyslogMessage()
             {
                 Facility = SyslogFacility.User,
                 Severity = level,

@@ -61,7 +61,7 @@
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Log.cs" />
     <Compile Include="Logging\SyslogLogger.cs" />
-    <Compile Include="Net\Syslog\Syslog.cs" />
+    <Compile Include="Net\Syslog.cs" />
     <Compile Include="Timers\ElapsedEventArgs.cs" />
     <Compile Include="Timers\MultimediaTimer.cs" />
     <Compile Include="Timers\PausableTimer.cs" />
