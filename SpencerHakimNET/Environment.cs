@@ -11,7 +11,7 @@ namespace SpencerHakim
         /// <summary>
         /// Gets the current Unix timestamp (seconds since midnight UTC 1/1/1970)
         /// </summary>
-        public static Int64 UnixTimestamp
+        public static long UnixTimestamp
         {
             get 
             {
@@ -20,7 +20,7 @@ namespace SpencerHakim
         }
 
         /// <summary>
-        /// Gets whether the current user and process have admin privileges
+        /// Gets whether the current process (and, by extension, the user) have admin privileges
         /// </summary>
         public static bool IsAdmin
         {
