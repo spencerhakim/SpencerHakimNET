@@ -113,20 +113,20 @@ namespace SpencerHakim
             FieldInfo _error = type.GetField("_error", BindingFlags.Static | BindingFlags.NonPublic);
             Debug.Assert( _error != null );
 
-            FieldInfo InternalSyncObject = type.GetField("InternalSyncObject", BindingFlags.Static | BindingFlags.NonPublic);
+            PropertyInfo InternalSyncObject = type.GetProperty("InternalSyncObject", BindingFlags.Static | BindingFlags.NonPublic);
             Debug.Assert( InternalSyncObject != null );
 
             MethodInfo InitializeStdOutError = type.GetMethod("InitializeStdOutError", BindingFlags.Static | BindingFlags.NonPublic);
             Debug.Assert( InitializeStdOutError != null );
 
             //lock and invalidate _out and _error
-            lock( InternalSyncObject.GetValue(null) )
+            lock( InternalSyncObject.GetValue(null, null) )
             {
                 _out.SetValue(null, null);
                 _error.SetValue(null, null);
             }
 
-            //reinitialize _out and _error
+            //reinitialize _out and _error so they point to the new console
             InitializeStdOutError.Invoke(null, new object[]{ true } );
             InitializeStdOutError.Invoke(null, new object[]{ false } );
         }
@@ -140,8 +140,8 @@ namespace SpencerHakim
         private static void DisableConsoleClose()
         {
             IntPtr hMenu = NativeMethods.GetSystemMenu(NativeMethods.GetConsoleWindow(), false);
-            NativeMethods.EnableMenuItem(hMenu, SC_CLOSE, MF_GRAYED);
-            NativeMethods.RemoveMenu(hMenu, SC_CLOSE, MF_BYCOMMAND);
+            NativeMethods.EnableMenuItem(hMenu, SC_CLOSE, MF_GRAYED); //disables the upper-right Close (X) button in the titlebar
+            NativeMethods.RemoveMenu(hMenu, SC_CLOSE, MF_BYCOMMAND); //removes the Close option in the Alt-Space menu
         }
     }
 }
