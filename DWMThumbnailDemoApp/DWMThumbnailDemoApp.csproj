@@ -51,17 +51,10 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConsoleManager.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -96,6 +89,10 @@
     <ProjectReference Include="..\DWMThumbnail\DWMThumbnail.csproj">
       <Project>{53C953D2-8ECF-42A1-ADA3-4192DE57D9BD}</Project>
       <Name>DWMThumbnail</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SpencerHakimNET\SpencerHakimNET.csproj">
+      <Project>{9974cc3f-51ff-4e7a-a0ef-afa52cd4b90d}</Project>
+      <Name>SpencerHakimNET</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
