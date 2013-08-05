@@ -51,9 +51,11 @@
     <Compile Include="ConsoleManager.cs" />
     <Compile Include="Convert.cs" />
     <Compile Include="Environment.cs" />
+    <Compile Include="Extensions\DrawingMethods.cs" />
     <Compile Include="Extensions\EnumerableMethods.cs" />
     <Compile Include="Extensions\GenericMethods.cs" />
     <Compile Include="Extensions\StreamMethods.cs" />
+    <Compile Include="Extensions\DiagnosticMethods.cs" />
     <Compile Include="Extensions\WindowsMethods.cs" />
     <Compile Include="IO\Permissions.cs" />
     <Compile Include="Logging\ConsoleLogger.cs" />

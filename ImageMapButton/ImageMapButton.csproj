@@ -40,7 +40,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="ColorDelta.cs" />
-    <Compile Include="DrawingExtensions.cs" />
     <Compile Include="ImageMapButton.cs">
       <SubType>Component</SubType>
     </Compile>

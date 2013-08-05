@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
+﻿using System.ComponentModel;
 using System.Drawing;
-using System.Management;
 using System.Windows.Forms;
 
 namespace SpencerHakim.Extensions
 {
     /// <summary>
-    /// Methods that use System.Windows.Forms or System.Management
+    /// Methods that use System.Windows.Forms
     /// </summary>
     public static class WindowsMethods
     {
@@ -41,7 +36,7 @@ namespace SpencerHakim.Extensions
         /// </summary>
         /// <param name="rect">The rectangle that may intersect a screen area</param>
         /// <returns>True if the rectangle intersects a screen area, false otherwise</returns>
-        public static bool IsVisibleOnAnyScreen(Rectangle rect)
+        public static bool IsVisibleOnAnyScreen(this Rectangle rect)
         {
             foreach(Screen screen in Screen.AllScreens)
             {
@@ -50,40 +45,6 @@ namespace SpencerHakim.Extensions
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Get the child Process IDs of a given process
-        /// </summary>
-        /// <param name="process">Process to analyze</param>
-        /// <returns>Null if failed to connect to WMI, List of child Process IDs otherwise</returns>
-        public static ReadOnlyCollection<int> GetChildProcessIds(this Process process)
-        {
-            if( process == null )
-                throw new ArgumentNullException("process");
-
-            String machineName = "localhost";
-            String myQuery = string.Format("SELECT ProcessId FROM win32_process WHERE ParentProcessId={0}", process.Id);
-            List<int> childPIds = null;
-
-            ManagementScope mScope = new ManagementScope(String.Format(@"\\{0}\root\cimv2", machineName), null);
-            mScope.Connect();
-            if( mScope.IsConnected )
-            {
-                ObjectQuery objQuery = new ObjectQuery(myQuery);
-                using( ManagementObjectSearcher objSearcher = new ManagementObjectSearcher(mScope, objQuery) )
-                using( ManagementObjectCollection result = objSearcher.Get() )
-                {
-                    childPIds = new List<int>();
-                    foreach( ManagementObject item in result )
-                    {
-                        int pid = Int32.Parse( item["ProcessId"].ToString() );
-                        childPIds.Add(pid);
-                    }
-                }
-            }
-
-            return new ReadOnlyCollection<int>(childPIds);
         }
     }
 }
