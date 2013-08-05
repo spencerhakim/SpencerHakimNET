@@ -1,6 +1,8 @@
 SpencerHakimNET
 ===============
-A small collection of C# utility code and custom Windows Forms and WPF components I've slowly written and/or rewritten over the years. Components are separated into their own projects and merged using ILRepack into SpencerHakim.Windows.AIO.dll. Requires NuGet.
+A small collection of C# 4.0 utility code and custom Windows Forms (and soon, WPF) components I've slowly written and/or rewritten over the years. Components are separated into their own projects and merged using [ILRepack](https://github.com/gluck/il-repack) into SpencerHakim.Windows.AIO.dll. Requires NuGet.
+
+I've not tested the code with Mono, but it should work for a lot of what's here. Anything that uses System.Management, which Mono explicitly does not support, will obviously not work, nor would anything using PInvoke.
 
 Licensed under the GNU LGPL 2.1
 
@@ -26,6 +28,10 @@ Functions similarly to the HTML `<map>` tag, but using an image color map instea
 - Overlapping destination rectangles are OK, just make sure to design your images so that source rectangles do not overlap.
 - You own your images, so dispose of them when you're done; memory leaks are bad, mmkay?
 - For ease of use, `ImageMapButton` implements `IEnumerable<ImageMapButtonArea>` and has an `ImageMapButtonArea this[Color]` indexer. This probably isn't "best practice." I do not care.
+- Recommend using PNGs for the `ImageMapButton.ChromaKeyImage` property to avoid any compression artifacting which may create color distortion around the edges of colored areas, which would prevent matching.
+
+#### TODO / WIP
+- Fuzzy matching of colors to better (or, really, at all) handle gradients, banding, and compression artifacting in the chroma key image.
 
 ## DWMThumbnail
 Uses the Desktop Window Manager API to display a thumbnail of the specified window. Requires Windows Vista or newer. Demo app included.
@@ -38,3 +44,6 @@ Uses the Desktop Window Manager API to display a thumbnail of the specified wind
 #### Usage and Tips
 - See [DWM_THUMBNAIL_PROPERTIES on MSDN](http://msdn.microsoft.com/en-us/library/windows/desktop/aa969502%28v=vs.85%29.aspx) for more info on the configuration properties.
 - `DWMThumbnail.SourceArea` defaults to `Rectangle.Empty` (value of `0,0,0,0`), which is interpreted as setting the `SourceArea` to a rectangle the size returned by [DwmQueryThumbnailSourceSize](http://msdn.microsoft.com/en-us/library/windows/desktop/aa969520%28v=vs.85%29.aspx) (more or less the full size of the window, depending on `SourceClientAreaOnly`)
+
+## UnitTests
+As its name would imply, unit tests for my code. Nothing is really in this yet, I'll get around to it (I know, I'm awful).
