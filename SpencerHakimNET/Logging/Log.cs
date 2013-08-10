@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using SpencerHakim.Extensions;
+using MSG = System.Tuple<SpencerHakim.Logging.Severity, string>;
 
 namespace SpencerHakim.Logging
 {
@@ -11,12 +13,12 @@ namespace SpencerHakim.Logging
     public class Log : IDisposable
     {
         private List<ILogger> loggers = new List<ILogger>();
-        private Queue< Tuple<Severity, string> > queue = new Queue< Tuple<Severity,string> >();
+        private ConcurrentQueue<MSG> queue = new ConcurrentQueue<MSG>();
         private Thread queueThread;
         private AutoResetEvent notify = new AutoResetEvent(false);
         private bool shutdown = false;
 
-        private object syncRoot = new object();
+        private object syncLoggers = new object();
         private bool disposed = false;
 
         /// <summary>
@@ -81,7 +83,7 @@ namespace SpencerHakim.Logging
                 throw new ArgumentNullException("logger");
 
             //don't want to modify the collection while iterating through it
-            lock( this.syncRoot )
+            lock( this.syncLoggers )
                 this.loggers.Add(logger);
         }
 
@@ -95,7 +97,7 @@ namespace SpencerHakim.Logging
             if( level > this.VerbosityLevel )
                 return;
 
-            this.queue.Enqueue( Tuple.Create(level, text) );
+            this.queue.Enqueue( new MSG(level, text) );
             this.notify.Set();
         }
 
@@ -103,11 +105,11 @@ namespace SpencerHakim.Logging
         {
             while( !this.shutdown )
             {
-                while( this.queue.Count > 0 )
+                MSG data = null;
+                while( this.queue.TryDequeue(out data) )
                 {
-                    var data = this.queue.Dequeue();
-
-                    lock( this.syncRoot )
+                    lock( this.syncLoggers )
+                    {
                         foreach( var logger in this.loggers )
                         {
                             try
@@ -116,6 +118,7 @@ namespace SpencerHakim.Logging
                             }
                             catch{} //guess we'll just have to live with it?
                         }
+                    }
                 }
 
                 if( !this.shutdown )
