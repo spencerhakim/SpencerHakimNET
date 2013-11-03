@@ -58,6 +58,7 @@
     <Compile Include="Extensions\StreamMethods.cs" />
     <Compile Include="Extensions\Win32Methods.cs" />
     <Compile Include="Extensions\WindowsMethods.cs" />
+    <Compile Include="IO\AppData.cs" />
     <Compile Include="IO\Permissions.cs" />
     <Compile Include="Logging\ConsoleLogger.cs" />
     <Compile Include="Logging\FileLogger.cs" />
