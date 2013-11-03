@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using SpencerHakim.Extensions;
 
 namespace SpencerHakim.IO
 {
@@ -31,9 +32,16 @@ namespace SpencerHakim.IO
         /// <returns>True if the path (or, if the path does not exist, a parent path) can be written; otherwise false</returns>
         public static bool HasWrite(string path)
         {
+            //kind of a bruteforce methodology, but it works
             return has(path,
-                x=>{ using( var fs = File.OpenWrite(x) ){} },
-                x=>{ Directory.SetLastWriteTime(path, Directory.GetLastWriteTime(path)); } //might be kind of a shitty test, but it works?
+                file=>{
+                    new FileStream(file, FileMode.Append, FileAccess.Write, FileShare.ReadWrite).SafeDispose();
+                },
+                dir=>{
+                    string tempFile = Path.Combine(dir, Guid.NewGuid().ToString());
+                    System.IO.File.Create(tempFile).SafeDispose();
+                    System.IO.File.Delete(tempFile);
+                }
             );
         }
 
@@ -52,8 +60,11 @@ namespace SpencerHakim.IO
             if( path == null )
                 throw new ArgumentNullException("path");
 
-            if( !Uri.IsWellFormedUriString(path, UriKind.RelativeOrAbsolute) && (new Uri(path)).Scheme == "file" )
+            Uri uri = null;
+            if( !Uri.TryCreate(path, UriKind.RelativeOrAbsolute, out uri) || uri.Scheme != "file" )
                 throw new ArgumentException("Malformed or invalid path", "path");
+
+            string originalPath = path;
 
             try
             {
@@ -63,25 +74,26 @@ namespace SpencerHakim.IO
                     try
                     {
                         //try file attrs first, then try a file/dir specific test
-                        FileAttributes attr = File.GetAttributes(path);
+                        FileAttributes attr = System.IO.File.GetAttributes(path);
+
+                        //pick the appropriate test
+                        Action<string> test;
                         if( (attr & FileAttributes.Directory) == FileAttributes.Directory )
-                        {
-                            dirTest(path);
-                            return true;
-                        }
+                            test = dirTest;
                         else
-                        {
-                            fileTest(path);
-                            return true;
-                        }
+                            test = fileTest;
+
+                        test(path); //throws if the test fails
+                        Directory.CreateDirectory(originalPath); //make sure we create any missing directories we moved up from
+
+                        return true;
                     }
-                    catch(UnauthorizedAccessException)
+                    catch(Exception ex)
                     {
-                        return false;
-                    }
-                    catch
-                    {
-                        path = Directory.GetParent(path).FullName;
+                        if( ex is FileNotFoundException || ex is DirectoryNotFoundException )
+                            path = Directory.GetParent(path).FullName;
+                        else
+                            return false; //unauthorized access or some other problem
                     }
                 }
                 while( path != null );
