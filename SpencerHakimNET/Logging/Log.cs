@@ -8,7 +8,7 @@ using MSG = System.Tuple<SpencerHakim.Logging.Severity, string>;
 namespace SpencerHakim.Logging
 {
     /// <summary>
-    /// Registers and manages ILoggers
+    /// Really simple logger. If you actually need something legit, use something else.
     /// </summary>
     public class Log : IDisposable
     {
@@ -100,6 +100,80 @@ namespace SpencerHakim.Logging
             this.queue.Enqueue( new MSG(level, text) );
             this.notify.Set();
         }
+
+        #region Quick calls
+        /// <summary>
+        /// Writes an Emergency message
+        /// </summary>
+        /// <param name="text">The message to log</param>
+        public void Emergency(string text)
+        {
+            this.Write(Severity.Emergency, text);
+        }
+
+        /// <summary>
+        /// Writes an Alert message
+        /// </summary>
+        /// <param name="text">The message to log</param>
+        public void Alert(string text)
+        {
+            this.Write(Severity.Alert, text);
+        }
+
+        /// <summary>
+        /// Writes a Critical message
+        /// </summary>
+        /// <param name="text">The message to log</param>
+        public void Critical(string text)
+        {
+            this.Write(Severity.Critical, text);
+        }
+
+        /// <summary>
+        /// Writes an Error message
+        /// </summary>
+        /// <param name="text">The message to log</param>
+        public void Error(string text)
+        {
+            this.Write(Severity.Error, text);
+        }
+
+        /// <summary>
+        /// Writes a Warning message
+        /// </summary>
+        /// <param name="text">The message to log</param>
+        public void Warning(string text)
+        {
+            this.Write(Severity.Warning, text);
+        }
+
+        /// <summary>
+        /// Writes a Notice message
+        /// </summary>
+        /// <param name="text">The message to log</param>
+        public void Notice(string text)
+        {
+            this.Write(Severity.Notice, text);
+        }
+
+        /// <summary>
+        /// Writes an Info message
+        /// </summary>
+        /// <param name="text">The message to log</param>
+        public void Info(string text)
+        {
+            this.Write(Severity.Info, text);
+        }
+
+        /// <summary>
+        /// Writes a Debug message
+        /// </summary>
+        /// <param name="text">The message to log</param>
+        public void Debug(string text)
+        {
+            this.Write(Severity.Debug, text);
+        }
+        #endregion
 
         private void queueProcessor()
         {
