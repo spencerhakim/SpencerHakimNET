@@ -12,20 +12,12 @@ namespace UnitTests
     public class ColorTests
     {
         [TestMethod]
-        public void TestMethod1()
+        public void CIE94()
         {
-            Console.WriteLine("RGB");
-            Console.WriteLine("White:Black - " + DeltaAlgorithms.DeltaRGB(Color.White, Color.Black) );
-            Console.WriteLine("Cyan:LightCyan - " + DeltaAlgorithms.DeltaRGB(Color.Cyan, Color.LightCyan) );
-
-            Console.WriteLine("\nDeltaE2000");
-            var white = CIELab_Color.FromXYZ( XYZ_Color.FromColor(Color.White) );
-            var black = CIELab_Color.FromXYZ( XYZ_Color.FromColor(Color.Black) );
-            var cyan = CIELab_Color.FromXYZ( XYZ_Color.FromColor(Color.Cyan) );
-            var lightcyan = CIELab_Color.FromXYZ( XYZ_Color.FromColor(Color.LightCyan) );
-
-            Console.WriteLine("White:Black - " + DeltaAlgorithms.DeltaE2000(white, black) );
-            Console.WriteLine("Cyan:LightCyan - " + DeltaAlgorithms.DeltaE2000(cyan, lightcyan) );
+            Assert.AreEqual(100, ColorDeltaAlgorithms.CIE94(Color.White, Color.Black), 0.01);
+            Assert.AreEqual(100, ColorDeltaAlgorithms.CIE94(Color.Black, Color.White), 0.01);
+            Assert.AreEqual(13.928, ColorDeltaAlgorithms.CIE94(Color.Cyan, Color.LightCyan), 0.01);
+            Assert.AreEqual(0, ColorDeltaAlgorithms.CIE94(Color.White, Color.White));
         }
     }
 }

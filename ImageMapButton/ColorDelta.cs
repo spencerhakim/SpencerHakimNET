@@ -6,9 +6,9 @@ namespace SpencerHakim.Drawing
     #region Color types
     public class CIELab_Color
     {
-        public double CIE_L { get; set; }
-        public double CIE_a { get; set; }
-        public double CIE_b { get; set; }
+        public double L { get; set; }
+        public double a { get; set; }
+        public double b { get; set; }
 
         /// <summary>
         /// instantiates a CIELab_Color instance from the supplied 
@@ -28,9 +28,20 @@ namespace SpencerHakim.Drawing
         /// </see>
         public CIELab_Color(double L, double a, double b)
         {
-            CIE_L = MathUtilities.round(L, 3);
-            CIE_a = MathUtilities.round(a, 3);
-            CIE_b = MathUtilities.round(b, 3);
+            this.L = Utilities.round(L, 3);
+            this.a = Utilities.round(a, 3);
+            this.b = Utilities.round(b, 3);
+        }
+
+        #region Conversion statics
+        /// <summary>
+        /// Converts a standard Color to a CIELab_Color
+        /// </summary>
+        /// <param name="color">Color to convert</param>
+        /// <returns>Converted color</returns>
+        public static CIELab_Color FromColor(Color color)
+        {
+            return FromXYZ( XYZ_Color.FromColor(color) );
         }
 
         /// <summary>
@@ -46,7 +57,7 @@ namespace SpencerHakim.Drawing
         /// <see>
         /// http://en.wikipedia.org/wiki/Lab_color_space
         /// </see>
-        public static CIELab_Color FromXYZ(XYZ_Color xyz)
+        internal static CIELab_Color FromXYZ(XYZ_Color xyz)
         {
             // constants using 
             // Observer= 2°, 
@@ -83,9 +94,10 @@ namespace SpencerHakim.Drawing
 
             return new CIELab_Color(L, a, b);
         }
+        #endregion
     }
 
-    public class XYZ_Color
+    internal class XYZ_Color
     {
         public double X { get; set; }
         public double Y { get; set; }
@@ -107,11 +119,12 @@ namespace SpencerHakim.Drawing
         public XYZ_Color(double X, double Y, double Z)
         {
 
-            this.X = MathUtilities.round(X, 3);
-            this.Y = MathUtilities.round(Y, 3);
-            this.Z = MathUtilities.round(Z, 3);
+            this.X = Utilities.round(X, 3);
+            this.Y = Utilities.round(Y, 3);
+            this.Z = Utilities.round(Z, 3);
         }
 
+        #region Conversion statics
         /// <summary>
         /// creates the XYZ_Color from the supplied double precision 
         /// RGB color components
@@ -314,45 +327,16 @@ namespace SpencerHakim.Drawing
         /// </returns>
         public static XYZ_Color FromCIELab(CIELab_Color color)
         {
-            return FromCIE(color.CIE_L, color.CIE_a, color.CIE_b);
+            return FromCIE(color.L, color.a, color.b);
         }
-
+        #endregion
     }
     #endregion
 
     #region MathUtilities
-    public static class MathUtilities
+    internal static class Utilities
     {
-        /// <summary>
-        /// rounds a double precision number to the specified number 
-        /// of decimal places
-        /// </summary>
-        /// <param name="number">
-        /// double precision value to round
-        /// </param>
-        /// <param name="decimal_places">
-        /// number of decimal points to maintain
-        /// </param>
-        /// <returns>
-        /// double precision value rounded to the specified decimal 
-        /// places
-        /// </returns>
-        /// <exception>
-        /// ArgumentException if decimal places not in the range [0,9]
-        /// </exception>
-        /// <remarks>
-        /// uses round half up rule for tie-breaking
-        /// </remarks>
-        /// <see cref="http://en.wikipedia.org/wiki/Rounding"/>
-        /// <algorithm>
-        /// 1. Multiple the original number by 10^decimal_places
-        /// 2. Add 0.5 and round the result (truncate to an integer)
-        /// 3. Divide result by 10^decimal_places
-        /// </algorithm>
-        /// <copyright>
-        /// Distributed under the Code Project Open License
-        /// http://www.codeproject.com/info/cpol10.aspx
-        /// </copyright>
+        // http://www.codeproject.com/info/cpol10.aspx
         public static double round(double number, int decimal_places)
         {
             int[] powers = new int[10]{
@@ -377,330 +361,68 @@ namespace SpencerHakim.Drawing
             return t / (double)power;
         }
 
-        /// <summary>
-        /// converts radians to degrees
-        /// </summary>
-        /// <param name="radians">
-        /// double precision radians value to be converted
-        /// </param>
-        /// <returns>
-        /// double precision degrees obtained by converting radians
-        /// </returns>
-        /// <see>
-        /// http://en.wikipedia.org/wiki/Radian
-        /// </see>
-        public static double rad2deg(double radians)
+        public static double[] ToRGBArray(this Color color)
         {
-            return radians / Math.PI * 180d;
-        }
-
-        /// <summary>
-        /// converts degrees to radians
-        /// </summary>
-        /// <param name="degrees">
-        /// double precision degrees value to be converted
-        /// </param>
-        /// <returns>
-        /// double precision radians obtained by converting degrees
-        /// </returns>
-        /// <see>
-        /// http://en.wikipedia.org/wiki/Radian
-        /// </see>
-        public static double deg2rad(double degrees)
-        {
-            return degrees * Math.PI / 180d;
+            return new double[]{ color.R, color.G, color.B };
         }
     }
     #endregion
 
     #region Delta algorithms
-    public class DeltaAlgorithms
+    public class ColorDeltaAlgorithms
     {
         /// <summary>
-        /// compute the difference between two Colors using a
-        /// Euclidian distance algorithm
+        /// Computes the difference (really the distance) between two Colors using the CIE94 color difference algorithm
         /// </summary>
-        /// <param name="color_1">
-        /// first RGB Color to form the difference
-        /// </param>
-        /// <param name="color_2">
-        /// second RGB Color to form the difference
-        /// </param>
-        /// <returns>
-        /// difference between the two RGB Color instances
-        /// </returns>
-        public static double DeltaRGB(Color color_1, Color color_2)
+        /// <param name="x">The first color</param>
+        /// <param name="y">The second color</param>
+        /// <returns>Difference between the colors [0,100]</returns>
+        /// <see cref="http://en.wikipedia.org/wiki/Color_difference#CIE94"/>
+        public static double CIE94(Color x, Color y)
         {
-            double delta_R = (double)(color_1.R - color_2.R);
-            double delta_G = (double)(color_1.G - color_2.G);
-            double delta_B = (double)(color_1.B - color_2.B);
-
-            // Eudlidean distance
-            return Math.Sqrt((delta_R * delta_R) + 
-                             (delta_G * delta_G) + 
-                             (delta_B * delta_B));
+            return CIE94(CIELab_Color.FromColor(x), CIELab_Color.FromColor(y));
         }
 
         /// <summary>
-        /// compute the difference between two CIELab_Color using 
-        /// Euclidian distance algorithm
+        /// Computes the difference (really the distance) between two CIELab_Colors using the CIE94 color difference algorithm
         /// </summary>
-        /// <param name="cielab_1">
-        /// first Color to form the difference
-        /// </param>
-        /// <param name="cielab_2">
-        /// second Color to form the difference
-        /// </param>
-        /// <returns>
-        /// difference between the two CIELab_Color instances
-        /// </returns>
-        public static double DeltaE1976(CIELab_Color cielab_1, CIELab_Color cielab_2)
+        /// <param name="x">The first color</param>
+        /// <param name="y">The second color</param>
+        /// <returns>Difference between the colors [0,100]</returns>
+        /// <see cref="http://en.wikipedia.org/wiki/Color_difference#CIE94"/>
+        public static double CIE94(CIELab_Color x, CIELab_Color y)
         {
-            double delta_CIE_a = cielab_1.CIE_a - cielab_2.CIE_a;
-            double delta_CIE_b = cielab_1.CIE_b - cielab_2.CIE_b;
-            double delta_CIE_L = cielab_1.CIE_L - cielab_2.CIE_L;
+            //these are apparently always 1, and usually in unity with K_L ( [K_L:K_C:K_H] == [1:1:1] or [2:1:1] )
+            const double K_C = 1.0;
+            const double K_H = 1.0;
 
-            // Eudlidean distance
-            return Math.Sqrt((delta_CIE_L * delta_CIE_L) +
-                             (delta_CIE_a * delta_CIE_a) +
-                             (delta_CIE_b * delta_CIE_b));
-        }
+            //weighting factors for graphic arts
+            const double K_L = 1.0;
+            const double K_1 = 0.045;
+            const double K_2 = 0.015;
 
-        /// <summary>
-        /// compute the difference between two CIE Lab colors using 
-        /// the CIE 1994 delta E algorithm
-        /// </summary>
-        /// <param name="cielab_1">
-        /// first CIELab_Color to form the difference
-        /// </param>
-        /// <param name="cielab_2">
-        /// second CIELab_Color to form the difference
-        /// </param>
-        /// <returns>
-        /// difference between the two CIELab_Color instances
-        /// </returns>
-        /// <see>
-        /// http://en.wikipedia.org/wiki/Color_difference
-        /// </see>
-        public static double DeltaE1994(CIELab_Color cielab_1, CIELab_Color cielab_2)
-        {
-            double C1;
-            double C2;
-            double CIE_1_a_squared = cielab_1.CIE_a * cielab_1.CIE_a;
-            double CIE_1_b_squared = cielab_1.CIE_b * cielab_1.CIE_b;
-            double CIE_2_a_squared = cielab_2.CIE_a * cielab_2.CIE_a;
-            double CIE_2_b_squared = cielab_2.CIE_b * cielab_2.CIE_b;
-            double delta_a;
-            double delta_a_squared;
-            double delta_b;
-            double delta_b_squared;
-            double delta_C_ab;
-            double delta_C_ab_divisor;
-            double delta_C_ab_squared;
-            double delta_E_Lab;
-            double delta_H_ab;
-            double delta_H_ab_divisor;
-            double delta_L;
-            double delta_L_squared;
-            double K_1;
-            double K_2;
+            double ΔL = x.L - y.L;
+            double Δa = x.a - y.a, Δa_2 = Math.Pow(Δa, 2);
+            double Δb = x.b - y.b, Δb_2 = Math.Pow(Δb, 2);
 
-            delta_L = cielab_1.CIE_L - cielab_2.CIE_L;
-            delta_L_squared = delta_L * delta_L;
+            double C_1 = Math.Sqrt(Math.Pow(x.a, 2) + Math.Pow(x.b, 2));
+            double C_2 = Math.Sqrt(Math.Pow(y.a, 2) + Math.Pow(y.b, 2));
+            double ΔC_ab = C_1 - C_2, ΔC_ab_2 = Math.Pow(ΔC_ab, 2);
 
-            delta_a = cielab_1.CIE_a - cielab_2.CIE_a;
-            delta_a_squared = delta_a * delta_a;
+            // avoid imaginary ΔH_ab
+            double ΔH_ab = 0.0;
+            if( (Δa_2 + Δb_2) >= ΔC_ab_2 )
+                ΔH_ab = Math.Sqrt(Δa_2 + Δb_2 - ΔC_ab_2);
 
-            delta_b = cielab_1.CIE_b - cielab_2.CIE_b;
-            delta_b_squared = delta_b * delta_b;
+            const double S_L = 1.0;
+            double S_C = 1.0 + (K_1 * C_1);
+            double S_H = 1.0 + (K_2 * C_1);
 
-            delta_E_Lab = Math.Sqrt(delta_L_squared + delta_a_squared + delta_b_squared);
-
-            C1 = Math.Sqrt(CIE_1_a_squared + CIE_1_b_squared);
-            C2 = Math.Sqrt(CIE_2_a_squared + CIE_2_b_squared);
-            delta_C_ab = C1 - C2;
-            delta_C_ab_squared = delta_C_ab * delta_C_ab;
-
-            // avoid imaginary delta_H_ab
-            if( (delta_a_squared + delta_b_squared) >= delta_C_ab_squared )
-                delta_H_ab = Math.Sqrt(delta_a_squared + delta_b_squared - delta_C_ab_squared);
-            else
-                delta_H_ab = 0.0;
-
-            // weighting factors for 
-            // graphic arts
-            // K_L = 1.0;               // => no delta_L division
-            K_1 = 0.045;
-            K_2 = 0.015;
-
-            delta_C_ab_divisor = 1.0 + (K_1 * C1);
-            delta_H_ab_divisor = 1.0 + (K_2 * C1);
-
-            delta_C_ab /= delta_C_ab_divisor;
-            delta_H_ab /= delta_H_ab_divisor;
-
-            return Math.Sqrt(delta_L_squared + 
-                             (delta_C_ab * delta_C_ab) + 
-                             (delta_H_ab * delta_H_ab));
-        }
-
-        public static double DeltaE2000(CIELab_Color cielab_1, CIELab_Color cielab_2)
-        {
-            double c = Math.Pow(25, 7);
-            double CIE_1_a_squared = cielab_1.CIE_a * cielab_1.CIE_a;
-            double CIE_1_b_squared = cielab_1.CIE_b * cielab_1.CIE_b;
-            double CIE_2_a_squared = cielab_2.CIE_a * cielab_2.CIE_a;
-            double CIE_2_b_squared = cielab_2.CIE_b * cielab_2.CIE_b;
-            double E00;
-            double t;
-            double weighting_factor_C = 1.0;
-            double weighting_factor_H = 1.0;
-            double weighting_factor_L = 1.0;
-            double xC1;
-            double xC2;
-            double xCX;
-            double xCY;
-            double xDC;
-            double xDH;
-            double xDL;
-            double xGX;
-            double xH1;
-            double xH2;
-            double xHX;
-            double xLX;
-            double xNN;
-            double xPH;
-            double xRC;
-            double xRT;
-            double xSC;
-            double xSH;
-            double xSL;
-            double xTX;
-
-            xC1 = Math.Sqrt(CIE_1_a_squared + CIE_1_b_squared);
-            xC2 = Math.Sqrt(CIE_2_a_squared + CIE_2_b_squared);
-            xCX = (xC1 + xC2) / 2.0;
-            t = Math.Pow(xCX, 7);
-            xGX = 0.5 * (1.0 - Math.Sqrt(t / (t + c)));
-
-            xNN = (1.0 + xGX) * cielab_1.CIE_a;
-            xC1 = Math.Sqrt(xNN * xNN + CIE_1_b_squared);
-            xH1 = CieLab2Hue(xNN, cielab_1.CIE_b);
-
-            xNN = (1.0 + xGX) * cielab_2.CIE_a;
-            xC2 = Math.Sqrt(xNN * xNN + CIE_2_b_squared);
-            xH2 = CieLab2Hue(xNN, cielab_2.CIE_b);
-
-            xDL = cielab_2.CIE_L - cielab_1.CIE_L;
-            xDC = xC2 - xC1;
-            if( (xC1 * xC2) == 0 )
-            {
-                xDH = 0.0;
-            }
-            else
-            {
-                t = xH2 - xH1;
-                xNN = Math.Round(t, 12);
-                if( Math.Abs(xNN) <= 180 )
-                {
-                    xDH = t;
-                }
-                else
-                {
-                    if( xNN > 180 )
-                    {
-                        xDH = t - 360.0;
-                    }
-                    else
-                    {
-                        xDH = t + 360.0;
-                    }
-                }
-            }
-            xDH = 2.0 * Math.Sqrt(xC1 * xC2) * Math.Sin(MathUtilities.deg2rad(xDH / 2.0));
-            xLX = (cielab_1.CIE_L - cielab_2.CIE_L) / 2.0;
-            xCY = (xC1 + xC2) / 2.0;
-            t = xH1 + xH2;
-            if( (xC1 *  xC2) == 0 )
-            {
-                xHX = t;
-            }
-            else
-            {
-                xNN = Math.Abs(Math.Round((xH1 - xH2), 12));
-                if( xNN > 180 )
-                {
-                    if( t < 360.0 )
-                    {
-                        xHX = t + 360.0;
-                    }
-                    else
-                    {
-                        xHX = t - 360.0;
-                    }
-                }
-                else
-                {
-                    xHX = t;
-                }
-                xHX /= 2;
-            }
-            xTX = 1.0 - 0.17 * Math.Cos(MathUtilities.deg2rad(xHX - 30.0)) + 
-                        0.24 * Math.Cos(MathUtilities.deg2rad(2.0 * xHX)) + 
-                        0.32 * Math.Cos(MathUtilities.deg2rad(3.0 * xHX + 6.0)) - 
-                        0.20 * Math.Cos(MathUtilities.deg2rad(4.0 * xHX - 63.0));
-            t = (xHX  - 275.0) / 25.0;
-            xPH = 30.0 * Math.Exp(-(t * t));
-
-            t = Math.Pow(xCY, 7);
-            xRC = 2.0 * Math.Sqrt(t / (t + c));
-            t = xLX - 50.0;
-            xSL = 1.0 + (0.015 * (t * t)) / Math.Sqrt(20.0 + (t * t));
-            xSC = 1.0 + 0.045 * xCY;
-            xSH = 1.0 + 0.015 * xCY * xTX;
-            xRT = -Math.Sin(MathUtilities.deg2rad(2.0 * xPH)) * xRC;
-
-            xDL /= (weighting_factor_L * xSL);
-            xDC /= (weighting_factor_C * xSC);
-            xDH /= (weighting_factor_H * xSH);
-
-            E00 = Math.Sqrt((xDL * xDL) + 
-                            (xDC * xDC) + 
-                            (xDH * xDH) + 
-                            (xRT * xDC * xDH));
-
-            return E00;
-        }
-
-        /// <summary>
-        /// helper function to return the CIE-H° value
-        /// </summary>
-        private static double CieLab2Hue(double a, double b)
-        {
-            double bias = 0.0;
-
-            if( (a >= 0.0) && (b == 0.0) )
-                return 0.0;
-
-            if( (a < 0.0) && (b == 0.0) )
-                return 180.0;
-
-            if( (a == 0.0) && (b > 0.0) )
-                return 90.0;
-
-            if( (a == 0.0) && (b < 0.0) )
-                return 270.0;
-
-            if( (a > 0.0) && (b > 0.0) )
-                bias = 0.0;
-
-            if( a < 0.0 )
-                bias = 180.0;
-
-            if( (a > 0.0) && (b < 0.0) )
-                bias = 360.0;
-
-            return MathUtilities.rad2deg(Math.Atan(b / a)) + bias;
+            return Math.Sqrt(
+                Math.Pow(ΔL/ (K_L * S_L), 2) +
+                Math.Pow(ΔC_ab / (K_C * S_C), 2) +
+                Math.Pow(ΔH_ab / (K_H * S_H), 2)
+            );
         }
     }
     #endregion
