@@ -7,6 +7,8 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using Accord.MachineLearning.Structures;
+using SpencerHakim.Drawing;
 using SpencerHakim.Extensions;
 using PushButtonState = System.Windows.Forms.VisualStyles.PushButtonState;
 
@@ -28,6 +30,14 @@ namespace SpencerHakim.Windows.Forms
         [Category("Appearance"), DefaultValue(PixelOffsetMode.Default)]
         [Description("Specifies how pixels are offset during rendering")]
         public PixelOffsetMode PixelOffsetMode { get; set; }
+
+        /// <summary>
+        /// Specifies how fuzzy the matching of chroma key values is [0,100]
+        /// </summary>
+        /// <remarks>Useful for when lossy image compression such as JPEG creates pixels with slightly different colors</remarks>
+        [Category("Behavior"), DefaultValue(0)]
+        [Description("Specifies how fuzzy the matching of chroma key values is [0,100]")]
+        public double ChromaKeyFuzziness { get; set; }
 
         /// <summary>
         /// Default foreground image for the control
@@ -162,7 +172,7 @@ namespace SpencerHakim.Windows.Forms
         }
         #endregion
 
-        private Dictionary<int, ImageMapButtonArea> mapAreas = new Dictionary<int,ImageMapButtonArea>(); //can't use Color as TKey because named colors != unnamed colors, even if ARGB is equal
+        private KDTree<ImageMapButtonArea> mapAreas = new KDTree<ImageMapButtonArea>(3);
         private Color currentChromaKey = Color.Empty;
         private PushButtonState currentAreaState = PushButtonState.Normal; //state of whatever button the mouse is currently hovering over/clicking
 
@@ -177,6 +187,14 @@ namespace SpencerHakim.Windows.Forms
                 ControlStyles.SupportsTransparentBackColor | ControlStyles.ResizeRedraw,
                 true
             );
+
+            //set up a wrapper for CIE94
+            this.mapAreas.Distance = (x, y) => {
+                return ColorDeltaAlgorithms.CIE94(
+                    Color.FromArgb((int)x[0], (int)x[1], (int)x[2]),
+                    Color.FromArgb((int)y[0], (int)y[1], (int)y[2])
+                );
+            };
         }
 
         /// <summary>
@@ -207,7 +225,7 @@ namespace SpencerHakim.Windows.Forms
             if( area == null )
                 throw new ArgumentNullException("area");
 
-            this.mapAreas.Add(area.ChromaKey.ToArgb(), area);
+            this.mapAreas.Add(new double[]{ area.ChromaKey.R, area.ChromaKey.G, area.ChromaKey.B }, area);
         }
 
         /// <summary>
@@ -219,17 +237,34 @@ namespace SpencerHakim.Windows.Forms
         }
 
         /// <summary>
-        /// Removes a map area identified by it's ChromaKey
+        /// Removes a map area identified by it's ChromaKey.
         /// </summary>
+        /// <remarks>This requires the tree to be rebuilt, so avoid usage if possible.</remarks>
         /// <param name="chromaKey">The ChromaKey of the map area to remove</param>
         public void RemoveMap(Color chromaKey)
         {
-            this.mapAreas.Remove(chromaKey.ToArgb());
+            var temp = this.mapAreas.Where( x => x.Position != SpencerHakim.Drawing.Utilities.ToRGBArray(chromaKey) ).ToList(); //subset everything we're keeping
+
+            //rebuild tree
+            this.mapAreas.Clear();
+            temp.ForEach( x => this.mapAreas.Add(x.Position, x.Value) );
         }
 
+        /// <summary>
+        /// Gets the closest matching (based upon ChromaKeyFuzziness) ImageMapButtonArea for the provided Color
+        /// </summary>
+        /// <param name="chromaKey">The Color to match</param>
+        /// <returns>The closest matching ImageMapButtonArea, or null</returns>
         public ImageMapButtonArea this[Color chromaKey]
         {
-            get { return this.mapAreas[chromaKey.ToArgb()]; }
+            get
+            {
+                var node = this.mapAreas.Nearest(chromaKey.ToRGBArray(), this.ChromaKeyFuzziness).OrderBy(x => x.Distance).Select(x => x.Node).FirstOrDefault();
+                if( Object.ReferenceEquals(node, null) ) //have to check it like this because Accord fucked up their operator== implementation
+                    return null;
+                else
+                    return node.Value;
+            }
         }
         #endregion
 
@@ -331,9 +366,10 @@ namespace SpencerHakim.Windows.Forms
                 pixel = this.chromaKeyBitmap.GetPixel(eX, eY);
 
             //if chromaKey is valid and area is enabled, change state
-            if( this.mapAreas.ContainsKey(pixel.ToArgb()) )
+            var area = this[pixel];
+            if( area != null )
             {
-                if( this[pixel].Enabled )
+                if( area.Enabled )
                 {
                     //don't change back to Hot when already Pressed (unless moving to another area), mouse is allowed to move while down
                     if( this.currentAreaState != PushButtonState.Pressed || this.currentChromaKey.ToArgb() != pixel.ToArgb() )
@@ -344,8 +380,8 @@ namespace SpencerHakim.Windows.Forms
 
                 //set tooltip regardless of whether the area is active
                 this.toolTip.Active = true;
-                if( this.toolTip.GetToolTip(this) != this[pixel].Text ) //prevents tooltip flicker
-                    this.toolTip.SetToolTip(this, this[pixel].Text);
+                if( this.toolTip.GetToolTip(this) != area.Text ) //prevents tooltip flicker
+                    this.toolTip.SetToolTip(this, area.Text);
             }
             else //if not over an ImageMapButtonArea, reset
             {
@@ -371,7 +407,8 @@ namespace SpencerHakim.Windows.Forms
         private void ImageMapButton_MouseDown(object sender, MouseEventArgs e)
         {
             //if chromaKey is valid, change state
-            if( this.mapAreas.ContainsKey(this.currentChromaKey.ToArgb()) && this[this.currentChromaKey].Enabled )
+            var area = this[this.currentChromaKey];
+            if( area != null && area.Enabled )
             {
                 this.currentAreaState = PushButtonState.Pressed;
                 this.Cursor = Cursors.Hand;
@@ -379,7 +416,6 @@ namespace SpencerHakim.Windows.Forms
                 this.Invalidate();
 
                 //toggle buttons don't support multiclick
-                ImageMapButtonArea area = this[this.currentChromaKey];
                 if( this.MultiClick && !area.ToggleMode )
                 {
                     int shrinkingInterval = 500; //ms
@@ -405,10 +441,10 @@ namespace SpencerHakim.Windows.Forms
         private void ImageMapButton_MouseUp(object sender, MouseEventArgs e)
         {
             //if chromaKey is valid, change state
-            if( this.mapAreas.ContainsKey(this.currentChromaKey.ToArgb()) )
+            var area = this[this.currentChromaKey];
+            if( area != null )
             {
                 //non-multiclick is raised on MouseUp, allowing user to move mouse off area to "cancel" click
-                ImageMapButtonArea area = this[this.currentChromaKey];
                 if( (!this.MultiClick || area.ToggleMode) && this.currentChromaKey != Color.Empty )
                 {
                     if( area.ToggleMode )

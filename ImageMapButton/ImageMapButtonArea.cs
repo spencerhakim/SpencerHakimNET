@@ -98,7 +98,7 @@ namespace SpencerHakim.Windows.Forms
         /// </summary>
         /// <param name="text">The text associated with the area. Used for the tooltip display</param>
         /// <param name="chromaKey">The color to chroma key the area to</param>
-        /// <param name="source">Defines the source location from the over and down images</param>
+        /// <param name="location">Defines the source location from the over and down images</param>
         /// <param name="size">Defines the size of the area</param>
         public ImageMapButtonArea(string text, Color chromaKey, Point location, Size size)
             : this(text, chromaKey, location, location, size)
@@ -111,7 +111,7 @@ namespace SpencerHakim.Windows.Forms
         /// </summary>
         /// <param name="text">The text associated with the area. Used for the tooltip display</param>
         /// <param name="chromaKey">The color to chroma key the area to</param>
-        /// <param name="source">Defines the source location from the over and down images</param>
+        /// <param name="location">Defines the source location from the over and down images</param>
         /// <param name="size">Defines the size of the area</param>
         /// <param name="toggleMode">Defines whether the button area is a normal or toggle button</param>
         public ImageMapButtonArea(string text, Color chromaKey, Point location, Size size, bool toggleMode)

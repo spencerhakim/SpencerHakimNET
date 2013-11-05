@@ -33,15 +33,18 @@
             // 
             // imageMapButton
             // 
+            this.imageMapButton.ChromaKeyFuzziness = 0D;
             this.imageMapButton.ChromaKeyImage = global::ImageMapButtonDemoApp.Properties.Resources.chromaKey;
             this.imageMapButton.DisabledImage = global::ImageMapButtonDemoApp.Properties.Resources.imageDisabled;
             this.imageMapButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.imageMapButton.Image = global::ImageMapButtonDemoApp.Properties.Resources.image;
+            this.imageMapButton.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             this.imageMapButton.Location = new System.Drawing.Point(0, 0);
             this.imageMapButton.MouseDownImage = global::ImageMapButtonDemoApp.Properties.Resources.imageDown;
             this.imageMapButton.MouseOverImage = global::ImageMapButtonDemoApp.Properties.Resources.imageOver;
             this.imageMapButton.Name = "imageMapButton";
-            this.imageMapButton.Size = new System.Drawing.Size(152, 152);
+            this.imageMapButton.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+            this.imageMapButton.Size = new System.Drawing.Size(166, 155);
             this.imageMapButton.TabIndex = 0;
             this.imageMapButton.Text = "imageMapButton1";
             this.imageMapButton.MapAreaClicked += new System.EventHandler<SpencerHakim.Windows.Forms.ButtonClickedEventArgs>(this.imageMapButton1_ButtonClicked);
@@ -50,7 +53,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(152, 152);
+            this.ClientSize = new System.Drawing.Size(166, 155);
             this.Controls.Add(this.imageMapButton);
             this.MaximizeBox = false;
             this.MinimumSize = new System.Drawing.Size(168, 190);
