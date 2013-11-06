@@ -8,7 +8,8 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using Accord.MachineLearning.Structures;
-using SpencerHakim.Drawing;
+using ColorMine.ColorSpaces;
+using ColorMine.ColorSpaces.Comparisons;
 using SpencerHakim.Extensions;
 using PushButtonState = System.Windows.Forms.VisualStyles.PushButtonState;
 
@@ -188,12 +189,10 @@ namespace SpencerHakim.Windows.Forms
                 true
             );
 
-            //set up a wrapper for CIE94
             this.mapAreas.Distance = (x, y) => {
-                return ColorDeltaAlgorithms.CIE94(
-                    Color.FromArgb((int)x[0], (int)x[1], (int)x[2]),
-                    Color.FromArgb((int)y[0], (int)y[1], (int)y[2])
-                );
+                var xx = new Rgb(){ R=x[0], G=x[1], B=x[2] };
+                var yy = new Rgb(){ R=y[0], G=y[1], B=y[2] };
+                return xx.Compare(yy, new CieDe2000Comparison());
             };
         }
 
@@ -243,7 +242,7 @@ namespace SpencerHakim.Windows.Forms
         /// <param name="chromaKey">The ChromaKey of the map area to remove</param>
         public void RemoveMap(Color chromaKey)
         {
-            var temp = this.mapAreas.Where( x => x.Position != SpencerHakim.Drawing.Utilities.ToRGBArray(chromaKey) ).ToList(); //subset everything we're keeping
+            var temp = this.mapAreas.Where( x => x.Position.SequenceEqual(new double[]{ chromaKey.R, chromaKey.G, chromaKey.B }) ).ToList(); //subset everything we're keeping
 
             //rebuild tree
             this.mapAreas.Clear();
@@ -259,7 +258,7 @@ namespace SpencerHakim.Windows.Forms
         {
             get
             {
-                var node = this.mapAreas.Nearest(chromaKey.ToRGBArray(), this.ChromaKeyFuzziness).OrderBy(x => x.Distance).Select(x => x.Node).FirstOrDefault();
+                var node = this.mapAreas.Nearest(new double[]{ chromaKey.R, chromaKey.G, chromaKey.B }, this.ChromaKeyFuzziness).OrderBy(x => x.Distance).Select(x => x.Node).FirstOrDefault();
                 if( Object.ReferenceEquals(node, null) ) //have to check it like this because Accord fucked up their operator== implementation
                     return null;
                 else
