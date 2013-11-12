@@ -61,7 +61,7 @@ set ILREPACK="%25CD%25\ILRepack.exe"
 cd "$(TargetDir)"
 del SpencerHakim.Windows.AIO.*
 del merge.log
-%25ILREPACK%25 /union /parallel /xmldocs /wildcards /log:merge.log /out:SpencerHakim.Windows.AIO.dll "$(TargetPath)" *.dll</PostBuildEvent>
+%25ILREPACK%25 /parallel /xmldocs /wildcards /log:merge.log /out:SpencerHakim.Windows.AIO.dll "$(TargetPath)" *.dll</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
