@@ -11,7 +11,7 @@ namespace SpencerHakim
     {
         private const int IN_BYTE_SIZE = 8;
         private const int OUT_BYTE_SIZE = 5;
-        private static char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".ToCharArray();
+        private static readonly char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".ToCharArray();
 
         /// <summary>
         /// Converts an array of 8-bit unsigned integers to its equivalent string representation that is encoded with base-32 digits.

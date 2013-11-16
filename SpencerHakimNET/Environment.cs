@@ -15,7 +15,15 @@ namespace SpencerHakim
         {
             get 
             {
-                return System.Convert.ToInt64( Math.Round((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds) );
+                return System.Convert.ToInt64( Math.Round((DateTime.UtcNow - UnixEpochDateTime).TotalSeconds) );
+            }
+        }
+
+        public static DateTime UnixEpochDateTime
+        {
+            get
+            {
+                return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             }
         }
 
@@ -27,7 +35,7 @@ namespace SpencerHakim
             get
             {
                 using( WindowsIdentity identity = WindowsIdentity.GetCurrent() )
-                    return (new WindowsPrincipal(identity)).IsInRole(WindowsBuiltInRole.Administrator);
+                    return new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator);
             }
         }
     }

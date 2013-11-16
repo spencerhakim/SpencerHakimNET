@@ -34,7 +34,7 @@ A bit dependency heavy in terms of sheer number of files, as it relies on [Accor
 - Overlapping destination rectangles are OK, just make sure to design your images so that source rectangles do not overlap.
 - You own your images, so dispose of them when you're done; memory leaks are bad, mmkay?
 - For ease of use, `ImageMapButton` implements `IEnumerable<ImageMapButtonArea>` and has an `ImageMapButtonArea this[Color]` indexer. This probably isn't "best practice." I do not care.
-- Recommend using PNGs for the `ImageMapButton.ChromaKeyImage` property to avoid any compression artifacting which may create color distortion around the edges of colored areas, which would prevent matching.
+- Recommend using PNGs for the `ImageMapButton.ChromaKeyImage` property to avoid any compression artifacting which may create color distortion around the edges of colored areas, which could prevent matching.
 
 ## DWMThumbnail
 Uses the Desktop Window Manager API to display a thumbnail of the specified window. Requires Windows Vista or newer. Demo app included.
