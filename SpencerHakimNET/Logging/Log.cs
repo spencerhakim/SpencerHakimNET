@@ -92,6 +92,18 @@ namespace SpencerHakim.Logging
         /// </summary>
         /// <param name="level">The severity level of the log</param>
         /// <param name="text">The text to log</param>
+        /// <param name="args">An object array that contains zero or more objects to format</param>
+        public void Write(Severity sev, string text, params object[] args)
+        {
+            text = String.Format(text, args);
+            Write(sev, text);
+        }
+
+        /// <summary>
+        /// Writes text to all loggers
+        /// </summary>
+        /// <param name="level">The severity level of the log</param>
+        /// <param name="text">The text to log</param>
         public void Write(Severity level, string text)
         {
             if( level > this.VerbosityLevel )
