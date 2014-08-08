@@ -93,23 +93,12 @@ namespace SpencerHakim.Logging
         /// <param name="level">The severity level of the log</param>
         /// <param name="text">The text to log</param>
         /// <param name="args">An object array that contains zero or more objects to format</param>
-        public void Write(Severity sev, string text, params object[] args)
-        {
-            text = String.Format(text, args);
-            Write(sev, text);
-        }
-
-        /// <summary>
-        /// Writes text to all loggers
-        /// </summary>
-        /// <param name="level">The severity level of the log</param>
-        /// <param name="text">The text to log</param>
-        public void Write(Severity level, string text)
+        public void Write(Severity level, string text, params object[] args)
         {
             if( level > this.VerbosityLevel )
                 return;
 
-            this.queue.Enqueue( new MSG(level, text) );
+            this.queue.Enqueue( new MSG(level, String.Format(text, args)) );
             this.notify.Set();
         }
 
@@ -118,72 +107,80 @@ namespace SpencerHakim.Logging
         /// Writes an Emergency message
         /// </summary>
         /// <param name="text">The message to log</param>
-        public void Emergency(string text)
+        /// <param name="args">An object array that contains zero or more objects to format</param>
+        public void Emergency(string text, params object[] args)
         {
-            this.Write(Severity.Emergency, text);
+            this.Write(Severity.Emergency, text, args);
         }
 
         /// <summary>
         /// Writes an Alert message
         /// </summary>
         /// <param name="text">The message to log</param>
-        public void Alert(string text)
+        /// <param name="args">An object array that contains zero or more objects to format</param>
+        public void Alert(string text, params object[] args)
         {
-            this.Write(Severity.Alert, text);
+            this.Write(Severity.Alert, text, args);
         }
 
         /// <summary>
         /// Writes a Critical message
         /// </summary>
         /// <param name="text">The message to log</param>
-        public void Critical(string text)
+        /// <param name="args">An object array that contains zero or more objects to format</param>
+        public void Critical(string text, params object[] args)
         {
-            this.Write(Severity.Critical, text);
+            this.Write(Severity.Critical, text, args);
         }
 
         /// <summary>
         /// Writes an Error message
         /// </summary>
         /// <param name="text">The message to log</param>
-        public void Error(string text)
+        /// <param name="args">An object array that contains zero or more objects to format</param>
+        public void Error(string text, params object[] args)
         {
-            this.Write(Severity.Error, text);
+            this.Write(Severity.Error, text, args);
         }
 
         /// <summary>
         /// Writes a Warning message
         /// </summary>
         /// <param name="text">The message to log</param>
-        public void Warning(string text)
+        /// <param name="args">An object array that contains zero or more objects to format</param>
+        public void Warning(string text, params object[] args)
         {
-            this.Write(Severity.Warning, text);
+            this.Write(Severity.Warning, text, args);
         }
 
         /// <summary>
         /// Writes a Notice message
         /// </summary>
         /// <param name="text">The message to log</param>
-        public void Notice(string text)
+        /// <param name="args">An object array that contains zero or more objects to format</param>
+        public void Notice(string text, params object[] args)
         {
-            this.Write(Severity.Notice, text);
+            this.Write(Severity.Notice, text, args);
         }
 
         /// <summary>
         /// Writes an Info message
         /// </summary>
         /// <param name="text">The message to log</param>
-        public void Info(string text)
+        /// <param name="args">An object array that contains zero or more objects to format</param>
+        public void Info(string text, params object[] args)
         {
-            this.Write(Severity.Info, text);
+            this.Write(Severity.Info, text, args);
         }
 
         /// <summary>
         /// Writes a Debug message
         /// </summary>
         /// <param name="text">The message to log</param>
-        public void Debug(string text)
+        /// <param name="args">An object array that contains zero or more objects to format</param>
+        public void Debug(string text, params object[] args)
         {
-            this.Write(Severity.Debug, text);
+            this.Write(Severity.Debug, text, args);
         }
         #endregion
 
