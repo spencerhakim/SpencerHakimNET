@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageMapButton", "ImageMapButton\ImageMapButton.csproj", "{D9104CCA-63BD-4082-B9FD-FC4BA74E7D06}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageMapButtonDemoApp", "ImageMapButtonDemoApp\ImageMapButtonDemoApp.csproj", "{28E5C43D-520E-4D00-85FD-F4AC18BCD551}"
