@@ -19,6 +19,9 @@ namespace SpencerHakim
             }
         }
 
+        /// <summary>
+        /// Gets the current Unix timestamp as a DateTime
+        /// </summary>
         public static DateTime UnixEpochDateTime
         {
             get

@@ -61,7 +61,7 @@ namespace SpencerHakim.IO
                         return folder;
             }
 
-            throw new UnauthorizedAccessException( String.Format("Can't access {0}-level AppData storage", Enum.GetName(typeof(AppDataKind), kind)) );
+            throw new UnauthorizedAccessException( String.Format("Can't access {0}-level AppData storage", System.Enum.GetName(typeof(AppDataKind), kind)) );
         }
     }
 }
