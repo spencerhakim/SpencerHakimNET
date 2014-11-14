@@ -44,6 +44,9 @@ namespace SpencerHakim.Extensions
             [DllImport("kernel32.dll", SetLastError=true)]
             public static extern uint GetCurrentThreadId();
 
+            [DllImport("kernel32.dll", SetLastError=true)]
+            public static extern bool IsWow64Process(IntPtr hProcess, out bool wow64Process);
+
             [DllImport("shell32.dll", SetLastError=true)]
             private static extern IntPtr CommandLineToArgvW([MarshalAs(UnmanagedType.LPWStr)]string lpCmdLine, out int pNumArgs);
 
@@ -109,6 +112,23 @@ namespace SpencerHakim.Extensions
                 throw new ArgumentNullException("process");
 
             foreachThread(process, p => NativeMethods.ResumeThread(p));
+        }
+
+        /// <summary>
+        /// Determines if a process is 32- or 64-bit
+        /// </summary>
+        /// <param name="process">The Process to determine the architecture for</param>
+        /// <returns>True if 64-bit, otherwise false</returns>
+        public static bool Is64Bit(this Process process)
+        {
+            if( System.Environment.OSVersion.Version.Major < 6 || !System.Environment.Is64BitOperatingSystem )
+                return false; //32-bit Windows
+
+            bool result;
+            if( !NativeMethods.IsWow64Process(process.Handle, out result) )
+                Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+
+            return result;
         }
 
         /// <summary>

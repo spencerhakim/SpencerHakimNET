@@ -63,7 +63,6 @@ namespace SpencerHakim.Diagnostics
         /// Otherwise, set to FALSE if the memory resides in the address space of the calling program (the debugger process).
         /// If you are accessing local memory (in the calling process) you should not set this member to TRUE.
         /// </summary>
-        [MarshalAs(UnmanagedType.Bool)]
         public bool ClientPointers;
     }
 
