@@ -30,38 +30,47 @@ namespace SpencerHakim.IO
         /// Gets the path for storing specific kinds of app data, with fallbacks in case more preferred locations aren't accessible
         /// </summary>
         /// <param name="kind">The kind of app data to get the path for</param>
+        /// <param name="appendPath">Path to append, except when the result is the current directory</param>
         /// <returns>The path for storing the provided kind of app data</returns>
-        public static string GetPath(AppDataKind kind)
+        public static string GetPath(AppDataKind kind, string appendPath)
         {
-            string folder = null;
+            string folder;
+            string[] dirs;
 
-            if( kind == AppDataKind.System )
+            switch (kind)
             {
-                string[] dirs = new[]
-                {
-                    Environment.CurrentDirectory, // Program Files (because, in practice, this is where people look), or the VS solution dir
-                    Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) // %ProgramData%
-                };
+                case AppDataKind.System:
+                    dirs = new[]
+                    {
+                        Environment.CurrentDirectory, // Program Files (because, in practice, this is where people look), or the VS solution dir
+                        Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) // %ProgramData%
+                    };
+                    break;
 
-                foreach(string dir in dirs)
-                    if( Permissions.HasReadWrite(folder = Path.GetFullPath(dir + "\\")) )
-                        return folder;
-            }
-            else if( kind == AppDataKind.User )
-            {
-                string[] dirs = new[]
-                {
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), // %AppData%
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), // %LocalAppData%
-                    Environment.GetFolderPath(Environment.SpecialFolder.Personal) // probably My Documents
-                };
+                case AppDataKind.User:
+                    dirs = new[]
+                    {
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), // %AppData%
+                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), // %LocalAppData%
+                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) // probably My Documents
+                    };
+                    break;
 
-                foreach(string dir in dirs)
-                    if( Permissions.HasReadWrite(folder = Path.GetFullPath(dir + "\\")) )
-                        return folder;
+                default:
+                    throw new ArgumentException("Unknown value", "kind");
             }
 
-            throw new UnauthorizedAccessException( String.Format("Can't access {0}-level AppData storage", System.Enum.GetName(typeof(AppDataKind), kind)) );
+            foreach(var dir in dirs)
+            {
+                if( !Permissions.HasReadWrite(folder = Path.GetFullPath(dir + "\\")) )
+                    continue;
+
+                return folder == Path.GetFullPath(Environment.CurrentDirectory + "\\") ?
+                    folder :
+                    Path.Combine(folder, appendPath);
+            }
+
+            throw new UnauthorizedAccessException( String.Format("Can't access {0}-level AppData storage", kind) );
         }
     }
 }

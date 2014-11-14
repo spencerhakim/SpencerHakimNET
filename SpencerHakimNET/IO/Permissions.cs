@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using SpencerHakim.Extensions;
 
@@ -20,8 +17,8 @@ namespace SpencerHakim.IO
         public static bool HasRead(string path)
         {
             return has(path,
-                x=>{ using( var fs = File.OpenRead(x) ){} },
-                x=>{ Directory.EnumerateFileSystemEntries(x); }
+                file => File.OpenRead(file).SafeDispose() ,
+                dir => Directory.EnumerateFileSystemEntries(dir)
             );
         }
 
@@ -34,13 +31,13 @@ namespace SpencerHakim.IO
         {
             //kind of a bruteforce methodology, but it works
             return has(path,
-                file=>{
+                file => {
                     new FileStream(file, FileMode.Append, FileAccess.Write, FileShare.ReadWrite).SafeDispose();
                 },
-                dir=>{
-                    string tempFile = Path.Combine(dir, Guid.NewGuid().ToString());
-                    System.IO.File.Create(tempFile).SafeDispose();
-                    System.IO.File.Delete(tempFile);
+                dir => {
+                    var tempFile = Path.Combine(dir, Guid.NewGuid().ToString());
+                    File.Create(tempFile).SafeDispose();
+                    File.Delete(tempFile);
                 }
             );
         }
@@ -60,47 +57,49 @@ namespace SpencerHakim.IO
             if( path == null )
                 throw new ArgumentNullException("path");
 
-            Uri uri = null;
+            Uri uri;
             if( !Uri.TryCreate(path, UriKind.RelativeOrAbsolute, out uri) || uri.Scheme != "file" )
                 throw new ArgumentException("Malformed or invalid path", "path");
 
-            string originalPath = path;
+            var originalPath = path;
 
-            try
+            //loop through path/parent paths
+            do
             {
-                //loop through path/parent paths
-                do
+                try
+                {
+                    //try file attrs first, then try a file/dir specific test
+                    var attr = File.GetAttributes(path);
+
+                    //pick the appropriate test
+                    Action<string> test;
+                    if( (attr & FileAttributes.Directory) == FileAttributes.Directory )
+                        test = dirTest;
+                    else
+                        test = fileTest;
+
+                    test(path); //throws if the test fails
+                    Directory.CreateDirectory(originalPath); //make sure we create any missing directories we moved up from
+
+                    return true;
+                }
+                catch(Exception ex)
                 {
                     try
                     {
-                        //try file attrs first, then try a file/dir specific test
-                        FileAttributes attr = System.IO.File.GetAttributes(path);
-
-                        //pick the appropriate test
-                        Action<string> test;
-                        if( (attr & FileAttributes.Directory) == FileAttributes.Directory )
-                            test = dirTest;
-                        else
-                            test = fileTest;
-
-                        test(path); //throws if the test fails
-                        Directory.CreateDirectory(originalPath); //make sure we create any missing directories we moved up from
-
-                        return true;
-                    }
-                    catch(Exception ex)
-                    {
                         if( ex is FileNotFoundException || ex is DirectoryNotFoundException )
+                        {
                             path = Directory.GetParent(path).FullName;
-                        else
-                            return false; //unauthorized access or some other problem
+                            continue;
+                        }
                     }
+                    catch{}
+                    break;
                 }
-                while( path != null );
             }
-            catch{}
+            while( path != null );
 
-            return false;
+            return false; //unauthorized access or some other problem
         }
     }
 }

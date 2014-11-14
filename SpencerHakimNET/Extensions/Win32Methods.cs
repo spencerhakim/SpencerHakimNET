@@ -22,7 +22,7 @@ namespace SpencerHakim.Extensions
             {
                 int pNumArgs;
 
-                IntPtr ptr = NativeMethods.CommandLineToArgvW(lpCmdLine, out pNumArgs);
+                var ptr = CommandLineToArgvW(lpCmdLine, out pNumArgs);
                 if( ptr == IntPtr.Zero )
                     Marshal.ThrowExceptionForHR( Marshal.GetHRForLastWin32Error() );
 
@@ -53,7 +53,7 @@ namespace SpencerHakim.Extensions
             if( process == null )
                 throw new ArgumentNullException("process");
 
-            string[] args = process.GetCommandLineArgs();
+            var args = process.GetCommandLineArgs().Skip(1);
             var psi = new ProcessStartInfo(process.MainModule.FileName, String.Join(" ", args));
             Process.Start(psi);
         }
@@ -70,19 +70,15 @@ namespace SpencerHakim.Extensions
 
             //do a bit less work for the current process
             if( process.Id == Process.GetCurrentProcess().Id )
-            {
                 return System.Environment.GetCommandLineArgs();
-            }
-            else
-            {
-                //have to use WMI for other processes
-                string cmdLine = null;
-                wmiQuery(String.Format("SELECT CommandLine FROM win32_process WHERE ProcessId={0}", process.Id), x => {
-                     cmdLine = x["CommandLine"].ToString();
-                });
 
-                return NativeMethods.CommandLineToArgvW(cmdLine);
-            }
+            //have to use WMI for other processes
+            string cmdLine = null;
+            wmiQuery(String.Format("SELECT CommandLine FROM win32_process WHERE ProcessId={0}", process.Id), x => {
+                    cmdLine = x["CommandLine"].ToString();
+            });
+
+            return NativeMethods.CommandLineToArgvW(cmdLine);
         }
 
         /// <summary>
@@ -107,10 +103,10 @@ namespace SpencerHakim.Extensions
 
         private static void wmiQuery(string query, Action<ManagementObject> action)
         {
-            using( ManagementObjectSearcher objSearcher = new ManagementObjectSearcher(query) )
-            using( ManagementObjectCollection result = objSearcher.Get() )
+            using( var objSearcher = new ManagementObjectSearcher(query) )
+            using( var result = objSearcher.Get() )
             {
-                foreach(ManagementObject mo in result)
+                foreach( var mo in result.Cast<ManagementObject>() )
                 {
                     action(mo);
                     mo.SafeDispose();

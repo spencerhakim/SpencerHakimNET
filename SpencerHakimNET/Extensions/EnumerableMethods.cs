@@ -12,24 +12,6 @@ namespace SpencerHakim.Extensions
     public static class EnumerableMethods
     {
         /// <summary>
-        /// Performs the specified action on each member of the enumerable. Best for short Actions.
-        /// </summary>
-        /// <typeparam name="T">Type of items in the enumerable</typeparam>
-        /// <param name="enumerable">The enumerable on which to act</param>
-        /// <param name="action">The action to perform on each member of the enumerable</param>
-        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
-        {
-            if( enumerable == null )
-                throw new ArgumentNullException("enumerable");
-
-            if( action == null )
-                throw new ArgumentNullException("action");
-
-            foreach( T item in enumerable )
-                action(item);
-        }
-
-        /// <summary>
         /// Copies the contents of an enumerable to a list. Does not clear the list beforehand.
         /// </summary>
         /// <typeparam name="T">Type of items in the enumerable and list</typeparam>
@@ -37,7 +19,8 @@ namespace SpencerHakim.Extensions
         /// <param name="list">The list to copy to</param>
         public static void CopyTo<T>(this IEnumerable<T> enumerable, IList<T> list)
         {
-            enumerable.ForEach(item => list.Add(item));
+            foreach( var i in enumerable )
+                list.Add(i);
         }
 
         /// <summary>
@@ -49,20 +32,15 @@ namespace SpencerHakim.Extensions
         /// <returns>The index of the object if it is found in the enumerable, otherwise -1</returns>
         public static int IndexOf<T>(this IEnumerable<T> enumerable, T obj)
         {
-            var result = enumerable.Select((o, i) => new { Object=o, Index=i }).Where(anon => Object.ReferenceEquals(anon.Object, obj));
-
+            var result = enumerable.Select((o, i) => new{ Object=o, Index=i }).Where( anon => Object.ReferenceEquals(anon.Object, obj) );
             if( result.Any() )
                 return result.First().Index;
 
-            else
-            {
-                result = enumerable.Select((o, i) => new { Object=o, Index=i }).Where(anon => anon.Object.Equals(obj));
+            result = enumerable.Select((o, i) => new{ Object=o, Index=i }).Where( anon => anon.Object.Equals(obj) );
+            if( result.Any() )
+                return result.First().Index;
 
-                if( result.Any() )
-                    return result.First().Index;
-                else
-                    return -1;
-            }
+            return -1;
         }
 
         /// <summary>
@@ -150,7 +128,7 @@ namespace SpencerHakim.Extensions
             if( index0 >= list.Count || index1 >= list.Count )
                 return false;
 
-            bool raiseEvents = list.RaiseListChangedEvents;
+            var raiseEvents = list.RaiseListChangedEvents;
 
             try
             {

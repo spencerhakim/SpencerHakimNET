@@ -14,10 +14,7 @@ namespace SpencerHakim.Extensions
         /// <returns>The hash value of the object, or 0 if it's null</returns>
         public static int SafeGetHashCode(this object obj)
         {
-            if( obj == null )
-                return 0;
-
-            return obj.GetHashCode();
+            return obj == null ? 0 : obj.GetHashCode();
         }
 
         /// <summary>
@@ -56,11 +53,10 @@ namespace SpencerHakim.Extensions
             if( val.CompareTo(min) < 0 )
                 return min;
 
-            else if( val.CompareTo(max) > 0 )
+            if( val.CompareTo(max) > 0 )
                 return max;
 
-            else
-                return val;
+            return val;
         }
     }
 }

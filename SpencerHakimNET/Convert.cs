@@ -22,7 +22,7 @@ namespace SpencerHakim
         {
             int i = 0, index = 0, digit = 0;
             int current_byte, next_byte;
-            StringBuilder result = new StringBuilder((data.Length + 7) * IN_BYTE_SIZE / OUT_BYTE_SIZE);
+            var result = new StringBuilder((data.Length + 7) * IN_BYTE_SIZE / OUT_BYTE_SIZE);
 
             while (i < data.Length)
             {

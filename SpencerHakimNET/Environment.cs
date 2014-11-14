@@ -37,7 +37,7 @@ namespace SpencerHakim
         {
             get
             {
-                using( WindowsIdentity identity = WindowsIdentity.GetCurrent() )
+                using( var identity = WindowsIdentity.GetCurrent() )
                     return new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator);
             }
         }

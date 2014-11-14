@@ -53,8 +53,8 @@ namespace SpencerHakim.Extensions
         /// <returns>Data from the Uri resource, in a MemoryStream</returns>
         public static MemoryStream Get(this Uri uri)
         {
-            return Get<MemoryStream>(uri, (stream) => {
-                MemoryStream ms = new MemoryStream();
+            return Get(uri, (stream) => {
+                var ms = new MemoryStream();
                 stream.CopyTo(ms);
                 return ms;
             });

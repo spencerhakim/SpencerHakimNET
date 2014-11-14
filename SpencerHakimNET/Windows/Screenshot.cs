@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
 using System.Windows.Forms;
-using SpencerHakim.Extensions;
 
 namespace SpencerHakim.Windows
 {
@@ -48,11 +44,11 @@ namespace SpencerHakim.Windows
             if( screens.Length == 0 )
                 throw new ArgumentException("Empty array", "screens");
 
-            Point start = new Point(0, 0);
-            Point end = new Point(0, 0);
+            var start = new Point(0, 0);
+            var end = new Point(0, 0);
 
             //get bounds of total screen space
-            foreach( Screen tempScreen in screens )
+            foreach( var tempScreen in screens )
             {
                 if( tempScreen.Bounds.X < start.X )
                     start.X = tempScreen.Bounds.X;
@@ -78,9 +74,12 @@ namespace SpencerHakim.Windows
         /// <returns>A Image of the screenshot</returns>
         public static Image Grab(Point upperleft, Point bottomright)
         {
-            Bitmap bitmap = new Bitmap(Math.Abs(bottomright.X - upperleft.X), Math.Abs(bottomright.Y - upperleft.Y));
+            var bitmap = new Bitmap(
+                Math.Abs(bottomright.X - upperleft.X),
+                Math.Abs(bottomright.Y - upperleft.Y)
+            );
 
-            using( Graphics g = Graphics.FromImage(bitmap) )
+            using( var g = Graphics.FromImage(bitmap) )
                 g.CopyFromScreen(upperleft, Point.Empty, bitmap.Size);
 
             return bitmap;

@@ -38,7 +38,7 @@ namespace SpencerHakim.Extensions
         /// <returns>True if the rectangle intersects a screen area, false otherwise</returns>
         public static bool IsVisibleOnAnyScreen(this Rectangle rect)
         {
-            foreach(Screen screen in Screen.AllScreens)
+            foreach( var screen in Screen.AllScreens )
             {
                 if( screen.WorkingArea.IntersectsWith(rect) )
                     return true;

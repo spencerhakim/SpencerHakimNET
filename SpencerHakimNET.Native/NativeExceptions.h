@@ -2,7 +2,7 @@
 
 namespace SpencerHakim {
 
-    ref class NativeExceptions
+    public ref class NativeExceptions
     {
     public:
         static void ThrowSEHException();
