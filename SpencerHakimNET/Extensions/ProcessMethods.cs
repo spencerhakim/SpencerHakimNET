@@ -11,10 +11,39 @@ namespace SpencerHakim.Extensions
     /// <summary>
     /// Methods that use Windows specific APIs (such as System.Management)
     /// </summary>
-    public static class Win32Methods
+    public static class ProcessMethods
     {
-        static class NativeMethods
+        private static class NativeMethods
         {
+            [Flags]
+            public enum ThreadAccess
+            {
+                TERMINATE               = 0x0001,
+                SUSPEND_RESUME          = 0x0002,
+                GET_CONTEXT             = 0x0008,
+                SET_CONTEXT             = 0x0010,
+                SET_INFORMATION         = 0x0020,
+                QUERY_INFORMATION       = 0x0040,
+                SET_THREAD_TOKEN        = 0x0080,
+                IMPERSONATE             = 0x0100,
+                DIRECT_IMPERSONATION    = 0x0200
+            }
+
+            [DllImport("kernel32.dll", SetLastError=true)]
+            public static extern IntPtr OpenThread(ThreadAccess dwDesiredAccess, bool bInheritHandle, uint dwThreadId);
+
+            [DllImport("kernel32.dll", SetLastError=true)]
+            public static extern uint SuspendThread(IntPtr hThread);
+
+            [DllImport("kernel32.dll", SetLastError=true)]
+            public static extern int ResumeThread(IntPtr hThread);
+
+            [DllImport("kernel32.dll", SetLastError=true)]
+            public static extern bool CloseHandle(IntPtr hHandle);
+
+            [DllImport("kernel32.dll", SetLastError=true)]
+            public static extern uint GetCurrentThreadId();
+
             [DllImport("shell32.dll", SetLastError=true)]
             private static extern IntPtr CommandLineToArgvW([MarshalAs(UnmanagedType.LPWStr)]string lpCmdLine, out int pNumArgs);
 
@@ -56,6 +85,30 @@ namespace SpencerHakim.Extensions
             var args = process.GetCommandLineArgs().Skip(1);
             var psi = new ProcessStartInfo(process.MainModule.FileName, String.Join(" ", args));
             Process.Start(psi);
+        }
+
+        /// <summary>
+        /// Suspends all threads belong to the process, except for the current thread if this is the current process
+        /// </summary>
+        /// <param name="process"></param>
+        public static void Suspend(this Process process)
+        {
+            if( process == null )
+                throw new ArgumentNullException("process");
+
+            foreachThread(process, p => NativeMethods.SuspendThread(p));
+        }
+
+        /// <summary>
+        /// Resumes all threads belong to the process, except for the current thread if this is the current process
+        /// </summary>
+        /// <param name="process"></param>
+        public static void Resume(this Process process)
+        {
+            if( process == null )
+                throw new ArgumentNullException("process");
+
+            foreachThread(process, p => NativeMethods.ResumeThread(p));
         }
 
         /// <summary>
@@ -111,6 +164,34 @@ namespace SpencerHakim.Extensions
                     action(mo);
                     mo.SafeDispose();
                 }
+            }
+        }
+
+        private static int currentThreadInSameProcess(Process proc)
+        {
+            var currentThread = 0;
+            using( var self = Process.GetCurrentProcess() )
+                if( self.Id == proc.Id )
+                    currentThread = (int)NativeMethods.GetCurrentThreadId();
+
+            return currentThread;
+        }
+
+        private static void foreachThread(Process proc, Action<IntPtr> action)
+        {
+            var currentThread = currentThreadInSameProcess(proc);
+
+            foreach( var pOpenThread in proc.Threads.Cast<ProcessThread>()
+                .Where( pT => pT.Id != currentThread )
+                .Select( pT => NativeMethods.OpenThread(NativeMethods.ThreadAccess.SUSPEND_RESUME, false, (uint)pT.Id) )
+                .Where( pOpenThread => pOpenThread != IntPtr.Zero ))
+            {
+                try
+                {
+                    action(pOpenThread);
+                }
+                catch{}
+                NativeMethods.CloseHandle(pOpenThread);
             }
         }
     }

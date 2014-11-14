@@ -50,6 +50,7 @@
     <Compile Include="Auth\TOTP.cs" />
     <Compile Include="ConsoleManager.cs" />
     <Compile Include="Convert.cs" />
+    <Compile Include="Diagnostics\MiniDump.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Extensions\DrawingMethods.cs" />
@@ -57,7 +58,7 @@
     <Compile Include="Extensions\GenericMethods.cs" />
     <Compile Include="Extensions\ImageMethods.cs" />
     <Compile Include="Extensions\StreamMethods.cs" />
-    <Compile Include="Extensions\Win32Methods.cs" />
+    <Compile Include="Extensions\ProcessMethods.cs" />
     <Compile Include="Extensions\WindowsMethods.cs" />
     <Compile Include="IO\AppData.cs" />
     <Compile Include="IO\Permissions.cs" />
