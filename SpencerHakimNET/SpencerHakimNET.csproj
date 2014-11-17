@@ -40,17 +40,21 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Auth\TOTP.cs" />
     <Compile Include="ConsoleManager.cs" />
     <Compile Include="Convert.cs" />
     <Compile Include="Diagnostics\MiniDump.cs" />
+    <Compile Include="Diagnostics\UnhandledExceptions.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Extensions\DrawingMethods.cs" />
