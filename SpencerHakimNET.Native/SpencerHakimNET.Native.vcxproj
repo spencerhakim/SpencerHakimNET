@@ -106,7 +106,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ole32.lib</AdditionalDependencies>
+      <AdditionalDependencies>ole32.lib;Advapi32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -121,7 +121,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ole32.lib</AdditionalDependencies>
+      <AdditionalDependencies>ole32.lib;Advapi32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,7 +135,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ole32.lib</AdditionalDependencies>
+      <AdditionalDependencies>ole32.lib;Advapi32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,7 +149,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ole32.lib</AdditionalDependencies>
+      <AdditionalDependencies>ole32.lib;Advapi32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -166,6 +166,7 @@
     <ClInclude Include="IAudioSessionControl2.h" />
     <ClInclude Include="IAudioSessionEvents.h" />
     <ClInclude Include="ISimpleAudioVolume.h" />
+    <ClInclude Include="ProcessEx.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="AudioSessionNotificationHook.h" />
     <ClInclude Include="Stdafx.h" />
@@ -176,6 +177,7 @@
     <ClCompile Include="AudioSessionNotificationReceiver.cpp" />
     <ClCompile Include="AudioSessionNotificationHook.cpp" />
     <ClCompile Include="NativeExceptions.cpp" />
+    <ClCompile Include="ProcessEx.cpp" />
     <ClCompile Include="Stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

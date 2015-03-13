@@ -25,6 +25,9 @@ namespace SpencerHakim
 
             [DllImport("kernel32.dll")]
             public static extern IntPtr GetConsoleWindow();
+
+            [DllImport("Kernel32")]
+            public static extern bool SetConsoleCtrlHandler(IntPtr handlr, bool add);
             #endregion
 
             #region WinUI interop
@@ -67,8 +70,8 @@ namespace SpencerHakim
             if( !HasConsole )
             {
                 NativeMethods.AllocConsole();
-                ResetOutAndError();
-                DisableConsoleClose();
+                resetOutAndError();
+                disableConsoleClose();
             }
         }
 
@@ -79,7 +82,7 @@ namespace SpencerHakim
         {
             if( HasConsole )
             {
-                SetOutAndErrorNull();
+                setOutAndErrorNull();
                 NativeMethods.FreeConsole();
             }
         }
@@ -102,21 +105,21 @@ namespace SpencerHakim
         /// <remarks>
         /// Forgive me for my sins
         /// </remarks>
-        private static void ResetOutAndError()
+        private static void resetOutAndError()
         {
-            Type type = typeof(System.Console);
+            var type = typeof(Console);
 
             //get the privates
-            FieldInfo _out = type.GetField("_out", BindingFlags.Static | BindingFlags.NonPublic);
+            var _out = type.GetField("_out", BindingFlags.Static | BindingFlags.NonPublic);
             Debug.Assert( _out != null );
 
-            FieldInfo _error = type.GetField("_error", BindingFlags.Static | BindingFlags.NonPublic);
+            var _error = type.GetField("_error", BindingFlags.Static | BindingFlags.NonPublic);
             Debug.Assert( _error != null );
 
-            PropertyInfo InternalSyncObject = type.GetProperty("InternalSyncObject", BindingFlags.Static | BindingFlags.NonPublic);
+            var InternalSyncObject = type.GetProperty("InternalSyncObject", BindingFlags.Static | BindingFlags.NonPublic);
             Debug.Assert( InternalSyncObject != null );
 
-            MethodInfo InitializeStdOutError = type.GetMethod("InitializeStdOutError", BindingFlags.Static | BindingFlags.NonPublic);
+            var InitializeStdOutError = type.GetMethod("InitializeStdOutError", BindingFlags.Static | BindingFlags.NonPublic);
             Debug.Assert( InitializeStdOutError != null );
 
             //lock and invalidate _out and _error
@@ -131,15 +134,16 @@ namespace SpencerHakim
             InitializeStdOutError.Invoke(null, new object[]{ false } );
         }
 
-        private static void SetOutAndErrorNull()
+        private static void setOutAndErrorNull()
         {
             Console.SetOut(TextWriter.Null);
             Console.SetError(TextWriter.Null);
         }
 
-        private static void DisableConsoleClose()
+        private static void disableConsoleClose()
         {
-            IntPtr hMenu = NativeMethods.GetSystemMenu(NativeMethods.GetConsoleWindow(), false);
+            NativeMethods.SetConsoleCtrlHandler(IntPtr.Zero, true); //ignores Ctrl-C
+            var hMenu = NativeMethods.GetSystemMenu(NativeMethods.GetConsoleWindow(), false);
             NativeMethods.EnableMenuItem(hMenu, SC_CLOSE, MF_GRAYED); //disables the upper-right Close (X) button in the titlebar
             NativeMethods.RemoveMenu(hMenu, SC_CLOSE, MF_BYCOMMAND); //removes the Close option in the Alt-Space menu
         }
